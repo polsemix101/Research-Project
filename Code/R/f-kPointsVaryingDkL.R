@@ -46,7 +46,7 @@ Ccomplexity<-function(prob){
 set.seed(1234567890, kin="Mersenne-Twister")
 
 # Load the boundaries in the HxC plane
-load("/Users/acfrery/Library/CloudStorage/OneDrive-VictoriaUniversityofWellington-STAFF/Documents/Alunos/Keila Barbosa/Code/EdgesHxC.RData")
+load("../../Data/Rmd/EdgesHxC.RData")
 
 Rep <- 301
 Length <- c(1000, 10000, 100000, 1000000)
@@ -77,8 +77,8 @@ HC$Length <- as.factor(HC$Length)
 HC$Dimension <- as.factor(HC$Dimension)
 
 ## Activate if needed
-save(file="HxCf-k.Rdata", HC)
-load(file="HxCf-k.Rdata")
+save(file="../../Data/Rmd/HxCf-k.Rdata", HC)
+load(file="../../Data/Rmd/HxCf-k.Rdata")
 
 # HC.melt <- melt(HC, measure.vars = c("Entropy", "Complexity"))
 
