@@ -1,6 +1,6 @@
 library(pdc)
 library(devtools)
-
+library(statcomp)
 
 
 #install_gitlab(repo="freryal/asymptotic-distribution-of-various-types-of-entropyunder-the-multinomial-law",host='https://gitlab.ecs.vuw.ac.nz/')
@@ -34,6 +34,7 @@ se <-function(lst){ #shannon entropy
 
   
 D=3
+t=2
 
 pdf(paste(path,"plots.pdf"), width=4, height=4)
 for (i in 1:7){
@@ -80,7 +81,7 @@ for (i in 1:7){
   nw <- length(tData)
   entropy <- list()
   for (n in 1:nw){
-    f <- codebook(as.numeric(unlist(sData[n])),m=D)
+    f <- codebook(as.numeric(unlist(sData[n])),m=D,t=t)
     entropy <- append(entropy, se(f))
   }
   
