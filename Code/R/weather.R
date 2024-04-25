@@ -20,6 +20,9 @@ data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","D
 #remove na values
 data <- na.omit(data)
 
+
+
+
 location = list("Miami","Edinburgh","Dublin")
 
 #for loop for counting number of patterns containing identical values for d=3
@@ -45,9 +48,9 @@ for (i in 1:nrow(data)){
 }
 
 
-
+d = 3 
 #plot raw data
-#p <- ggplot(data=data,aes(DATE,TMAX,group=1))+geom_line() 
+#p <- ggplot(data=data,aes(DATE,TMAX,group=1))+geom_line()
 #p + facet_grid(rows=vars(NAME))
 
 
