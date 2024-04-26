@@ -39,6 +39,32 @@ percentual.equalities <- function(patterns){
   return(n.duplicated/n.patterns)
 }
 
+
+formationPattern <- function(series, D, tau, option){
+  
+  i = 1
+  n = length(series)
+  p_patterns = elements = matrix(nrow = n, ncol = D)
+  index = c(0:(D-1))
+  
+  for(s in seq(1, length(series)-(D-1)*tau, by = 1)){
+    # the indices for the subsequence
+    ind = seq(s, s+(D-1)*tau, by = tau)
+    elements[i,] = series[ind]
+    p_patterns[i,] = index[order(elements[i,])]
+    i = i + 1
+  }
+  
+  if(option == 0){
+    p_patterns = na.omit(p_patterns)
+    return(p_patterns[1:(i-1),])
+  }else if(option == 1){
+    elements = na.omit(elements)
+    return(elements[1:(i-1),])    
+  }
+}
+
+#Only used for magnus' version
 identicalValues <- function(elements){
   ranked = rank(elements)
   unique = unique(ranked)
@@ -52,7 +78,7 @@ identicalValues <- function(elements){
       index = which(ranked == unique[i])
       n = length(index)
       perm = perm * factorial(n)
-      perms = permutations(n,n,v=(as.integer(unique[i]-(n-1)/2)):as.integer((unique[i]+(n-1)/2)))
+      perms = permutations(n,n,v=(unique[i]-(n-1)/2):(unique[i]+(n-1)/2))
       permList = append(permList,list(perms))
       indexList = append(indexList,list(index))
     }
@@ -62,8 +88,11 @@ identicalValues <- function(elements){
       nPerms = nrow(permList[[i]])
       temp = indexList[i][[1]]
       nrowBeforeExtension = nrow(finalPatterns)
-      for (o in 1:(nPerms-1)){
-        finalPatterns = rbind(finalPatterns,finalPatterns)
+      patterns = finalPatterns
+      if (nPerms!=1){
+        for(o in 1:(nPerms-1)){
+          finalPatterns = rbind(finalPatterns,patterns)
+        }
       }
       for (j in 1:length(temp)){
         value = permList[[i]][,j]
@@ -75,17 +104,35 @@ identicalValues <- function(elements){
         }
       }
     }
-    #return(cbind(rep(weight,perm),finalPatterns))
-    return(finalPatterns)
+    return(cbind(rep(weight,perm),finalPatterns))
   } else {
     return(c(weight,ranked))
   }
   
 }
 
-formationPattern <- function(series, D, tau, option){
-  
-  i = 1
+#Only used for magnus' version
+ordinal_pattern <-function(weightAndPatterns){
+  d = ncol(weightAndPatterns)-1
+  possiblePatterns = permutations(d,d,v=1:d)
+  weight = weightAndPatterns[,1]
+  df = as.data.frame(weightAndPatterns[,-c(1)])
+  weights = c()
+  for (i in 1:factorial(d)){
+    row = possiblePatterns[i,]
+    index = 1:(nrow(df))
+    for(j in 1:d){
+      index = intersect(index,which(df[,j]==row[j]))
+    }
+    sum = sum(weight[index])
+    weights = append(weights,sum)
+  }
+  return(weights)
+}
+
+#Only used for magnus' version
+formationPatternMagnus <- function(series, D, tau){
+  i=1
   n = length(series)
   p_patterns = matrix(nrow = 0, ncol = D+1)
   elements = matrix(nrow = 0, ncol = D)
@@ -95,37 +142,18 @@ formationPattern <- function(series, D, tau, option){
     # the indices for the subsequence
     ind = seq(s, s+(D-1)*tau, by = tau)
     elements = rbind(elements,series[ind])
-    weightAndPatterns = identicalValues(series[ind])
-    print(weightAndPatterns)
+    weightAndPatterns = identicalValues(elements[i,])
     p_patterns = rbind(p_patterns,weightAndPatterns)
-    #p_patterns[i,] = index[order(elements[i,])]
-    i = i + 1
+    i=i+1
   }
+  p_patterns = na.omit(p_patterns)
+  result = ordinal_pattern(p_patterns)
+  return(result)
   
-  if(option == 0){
-    p_patterns = na.omit(p_patterns)
-    return(p_patterns[1:(i-1),])
-  }else if(option == 1){
-    elements = na.omit(elements)
-    return(elements[1:(i-1),])
-  }
 }
 
-ordinal_pattern <-function(weightAndPatterns,d){
-  df = as.data.frame(weightAndPatterns)
-  names(df) = c("weight","a","b","c")
-  weights = weightAndPatterns[,1]
-  patterns = as.data.frame(weightAndPatterns[,-c(1)])
-  a = group_by(df,a,b,c)
-  #count = patterns %>% group_by_all() #%>% count
-  return(df)
-}
 
-test = c(1,2,2,2,2)
-#temp = formationPattern(test,D=3,tau=1,0)
-temp2 = identicalValues(test)
-#temp1 = ordinal_pattern(temp,d=3)
-print(temp2)
+
 
 # Bandt-Pompe function ---------------------------------------------------------------------------------
 

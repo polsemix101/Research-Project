@@ -9,7 +9,7 @@ library(gtools)
 
 setwd(dirname(getActiveDocumentContext()$path))
 print(getwd())
-#source("Bandt-Pompe.R")
+source("Bandt-Pompe.R")
 
 #####################################################################################
 
@@ -48,84 +48,16 @@ meteo_dublin_max = meteo[meteo$NAME == "DUBLIN PHOENIX PARK, EI",][16292:26297,"
 meteo_miami_max = meteo[meteo$NAME == "MIAMI INTERNATIONAL AIRPORT, FL US",][16292:26297,"TMAX"]
 meteo_edinburgh_max = meteo[meteo$NAME == "EDINBURGH ROYAL BOTANIC GARDE, UK",][11910:21915,"TMAX"]
 
+meteo_dublin_max = na.omit(meteo_dublin_max)
+meteo_edinburgh_max = na.omit(meteo_edinburgh_max)
+meteo_miami_max = na.omit(meteo_miami_max)
 
-
-
-identicalValues <- function(elements){
-  ranked = rank(elements)
-  unique = unique(ranked)
-  len = length(ranked)
-  finalPatterns = ranked
-  weight = 1
-  perm=1
-  if (length(unique)!=len){
-    permList = c()
-    indexList = c()
-    for (i in 1:length(unique)){
-      index = which(ranked == unique[i])
-      n = length(index)
-      perm = perm * factorial(n)
-      print(unique[i])
-      perms = permutations(n,n,v=(unique[i]-(n-1)/2):(unique[i]+(n-1)/2))
-      permList = append(permList,list(perms))
-      indexList = append(indexList,list(index))
-    }
-    weight = 1/perm
-    finalPatterns = matrix(rep(0,len),nrow=1,ncol=len)
-    for (i in 1:length(permList)){
-      nPerms = nrow(permList[[i]])
-      temp = indexList[i][[1]]
-      nrowBeforeExtension = nrow(finalPatterns)
-      finalPatterns = t(matrix(rep(c(finalPatterns),nPerms),nrow=len))
-      for (j in 1:length(temp)){
-        value = permList[[i]][,j]
-        for (p in 1:nPerms){
-          for(k in 1:nrowBeforeExtension){
-            rowIndex = k+(p-1)*nrowBeforeExtension
-            finalPatterns[rowIndex,temp[j]]=value[rowIndex]
-          }
-        }
-      }
-    }
-    return(cbind(rep(weight,perm),finalPatterns))
-  } else {
-    return(c(weight,ranked))
-  }
-  
-}
-
-formationPattern <- function(series, D, tau, option){
-
-  i = 1
-  n = length(series)
-  p_patterns = matrix(nrow = 0, ncol = D+1)
-  elements = matrix(nrow = 0, ncol = D)
-  index = c(0:(D-1))
-
-  for(s in seq(1, length(series)-(D-1)*tau, by = 1)){
-    # the indices for the subsequence
-    ind = seq(s, s+(D-1)*tau, by = tau)
-    elements = rbind(elements,series[ind])
-    weightAndPatterns = identicalValues(elements[i,])
-    print(weightAndPatterns)
-    p_patterns = rbind(p_patterns,weightAndPatterns)
-    #p_patterns[i,] = index[order(elements[i,])]
-    i = i + 1
-  }
-
-  if(option == 0){
-    p_patterns = na.omit(p_patterns)
-    return(p_patterns[1:(i-1),])
-  }else if(option == 1){
-    elements = na.omit(elements)
-    return(elements[1:(i-1),])
-  }
-}
-
-test = c(1,2,3,4)
-temp = formationPattern(test,D=3,tau=1,0)
-#temp = identicalValues(test)
-print(temp)
+temp = formationPatternMagnus(meteo_edinburgh_max,D=3,tau=1)
+n = sum(temp)
+opd = temp/n
+print(opd)
+entropy = global_complexity(opd=opd)[1]
+print(entropy)
 
 #Direct entropy calculations with statcomp
 # meteo_dublin_max = na.omit(meteo_dublin_max)
