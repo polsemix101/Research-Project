@@ -9,7 +9,6 @@ setwd(this.path::here())
 
 source("ADPE/AsymptoticEntropyVariancesComparison.R")
 dataPath = "./../../Data/CSV/weather.csv"
-
 data = read.csv(dataPath)
 data = select(data, -STATION)
 
@@ -18,9 +17,7 @@ data["NAME"] <- replace(data["NAME"], data["NAME"]=="EDINBURGH ROYAL BOTANIC GAR
 data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","Dublin")
 
 #remove na values
-data <- na.omit(data)
-
-
+#data <- na.omit(data)
 
 
 location = list("Miami","Edinburgh","Dublin")
@@ -65,13 +62,10 @@ df = data.frame()
 
 for (i in location){
   tmax = as.numeric(unlist(data[data["NAME"]==i,]["TMAX"]))
-  opd = ordinal_pattern_distribution(tmax,d) #statcomp 
+  opd = ordinal_pattern_distribution(tmax,d) #statcomp
   n=sum(opd)
   opd = opd*(1/n)
-  opd1 = codebook(tmax,m=d) #pdc
-  print(global_complexity(opd=opd)[1:2]) #statcomp 
-  print(global_complexity(opd=opd1)[1:2]) #pdc
-  entropyComplexity = global_complexity(opd=opd1)[1:2]
+  entropyComplexity = global_complexity(opd=opd)[1:2]
   oldVariance = v.n.q(n,d,opd) #function from ADPE/AsymptoticEntropyVariancesComparison.R
   newVariance = sigma.n.q(n,d,opd) #function from ADPE/AsymptoticEntropyVariancesComparison.R
   oldSd = oldVariance**(1/2) #standard deviation
@@ -85,4 +79,5 @@ df$location = location
 colnames(df) = c("entropy","complexity","oldVariance","newVariance","oldCILength","newCILength","location")
 
 print(df)
+
 

@@ -8,6 +8,7 @@ if(!require(gtools)){
   install.packages("gtools")
   require(gtools)
 } 
+library(dplyr)
 
 # Auxiliar Function -------------------------------------------------------------------------------------
 
@@ -38,18 +39,66 @@ percentual.equalities <- function(patterns){
   return(n.duplicated/n.patterns)
 }
 
+identicalValues <- function(elements){
+  ranked = rank(elements)
+  unique = unique(ranked)
+  len = length(ranked)
+  weight = 1
+  perm=1
+  if (length(unique)!=len){
+    permList = c()
+    indexList = c()
+    for (i in 1:length(unique)){
+      index = which(ranked == unique[i])
+      n = length(index)
+      perm = perm * factorial(n)
+      perms = permutations(n,n,v=(as.integer(unique[i]-(n-1)/2)):as.integer((unique[i]+(n-1)/2)))
+      permList = append(permList,list(perms))
+      indexList = append(indexList,list(index))
+    }
+    weight = 1/perm
+    finalPatterns = matrix(rep(0,len),nrow=1,ncol=len)
+    for (i in 1:length(permList)){
+      nPerms = nrow(permList[[i]])
+      temp = indexList[i][[1]]
+      nrowBeforeExtension = nrow(finalPatterns)
+      for (o in 1:(nPerms-1)){
+        finalPatterns = rbind(finalPatterns,finalPatterns)
+      }
+      for (j in 1:length(temp)){
+        value = permList[[i]][,j]
+        for (p in 1:nPerms){
+          for(k in 1:nrowBeforeExtension){
+            rowIndex = k+(p-1)*nrowBeforeExtension
+            finalPatterns[rowIndex,temp[j]]=value[p]
+          }
+        }
+      }
+    }
+    #return(cbind(rep(weight,perm),finalPatterns))
+    return(finalPatterns)
+  } else {
+    return(c(weight,ranked))
+  }
+  
+}
+
 formationPattern <- function(series, D, tau, option){
   
   i = 1
   n = length(series)
-  p_patterns = elements = matrix(nrow = n, ncol = D)
+  p_patterns = matrix(nrow = 0, ncol = D+1)
+  elements = matrix(nrow = 0, ncol = D)
   index = c(0:(D-1))
   
   for(s in seq(1, length(series)-(D-1)*tau, by = 1)){
     # the indices for the subsequence
     ind = seq(s, s+(D-1)*tau, by = tau)
-    elements[i,] = series[ind]
-    p_patterns[i,] = index[order(elements[i,])]
+    elements = rbind(elements,series[ind])
+    weightAndPatterns = identicalValues(series[ind])
+    print(weightAndPatterns)
+    p_patterns = rbind(p_patterns,weightAndPatterns)
+    #p_patterns[i,] = index[order(elements[i,])]
     i = i + 1
   }
   
@@ -58,9 +107,25 @@ formationPattern <- function(series, D, tau, option){
     return(p_patterns[1:(i-1),])
   }else if(option == 1){
     elements = na.omit(elements)
-    return(elements[1:(i-1),])    
+    return(elements[1:(i-1),])
   }
 }
+
+ordinal_pattern <-function(weightAndPatterns,d){
+  df = as.data.frame(weightAndPatterns)
+  names(df) = c("weight","a","b","c")
+  weights = weightAndPatterns[,1]
+  patterns = as.data.frame(weightAndPatterns[,-c(1)])
+  a = group_by(df,a,b,c)
+  #count = patterns %>% group_by_all() #%>% count
+  return(df)
+}
+
+test = c(1,2,2,2,2)
+#temp = formationPattern(test,D=3,tau=1,0)
+temp2 = identicalValues(test)
+#temp1 = ordinal_pattern(temp,d=3)
+print(temp2)
 
 # Bandt-Pompe function ---------------------------------------------------------------------------------
 
