@@ -7,7 +7,7 @@ library(this.path)
 
 setwd(this.path::here())
 
-source("ADPE/AsymptoticEntropyVariancesComparison.R")
+#source("ADPE/AsyptmoticEntropyVariancesComparison.R")
 dataPath = "./../../Data/CSV/weather.csv"
 data = read.csv(dataPath)
 data = select(data, -STATION)
@@ -17,24 +17,29 @@ data["NAME"] <- replace(data["NAME"], data["NAME"]=="EDINBURGH ROYAL BOTANIC GAR
 data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","Dublin")
 
 #remove na values
-#data <- na.omit(data)
+data <- na.omit(data)
 
 
 location = list("Miami","Edinburgh","Dublin")
 
+# test = c(1,2,2)
+# pattern = 
+# #pattern = formationPattern(test, D=3, tau=1,0)
+# print(pattern)
+
 #for loop for counting number of patterns containing identical values for d=3
-# count = c()
-# for (i in location){
-#   tmax = as.numeric(unlist(data[data["NAME"]==i,]["TMAX"]))
-#   n = length(tmax)
-#   counter=0
-#   for (j in 1:(n-2)){
-#     if(tmax[j]==tmax[j+1] | tmax[j]==tmax[j+2] | tmax[j+1]==tmax[j+2])
-#       counter = counter + 1
-#   }
-#   count = append(count,counter)
-# }
-# print(count)
+count = c()
+for (i in location){
+  tmax = as.numeric(unlist(data[data["NAME"]==i,]["TMAX"]))
+  n = length(tmax)
+  counter=0
+  for (j in 1:(n-2)){
+    if(tmax[j]==tmax[j+1] | tmax[j]==tmax[j+2] | tmax[j+1]==tmax[j+2])
+      counter = counter + 1
+  }
+  count = append(count,counter)
+}
+print(count)
 
 #add noise that only effect patterns with identical values. Both statcomp and pdc will always assign a observation containing
 #multiple identical values to the same pattern instead of a more evenly 50/50 divide between the two possible patterns.

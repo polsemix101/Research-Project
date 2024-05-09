@@ -1,0 +1,81 @@
+\documentclass[12pt, a4paper, twoside, openright]{book}
+
+\usepackage{vuwthesis} % sets up some local things, mostly the front page
+
+\usepackage{palatino} % sets palatino as the default font
+
+\usepackage{url} % for typesetting urls
+
+
+
+%\renewcommand{\baselinestretch}{1.00}
+
+
+\begin{document}
+
+\frontmatter
+% Book style knows about front matter
+% Report style doesn't so you need to set roman numbering etc yourself :-(
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{The Title}
+\author{The Author}
+
+\subject{Computer Science}
+\abstract{An abstract of fewer than 500 words must be included.}
+% Books don't normally have abstracts, and this is a bit of a hack
+
+% Uncomment the appropriate degree
+\phd
+%\mscthesisonly
+%\mscwithhonours
+%\mscbothparts
+% \otherdegree{DEGREE OR DIPLOMA NAME}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\maketitle
+
+\include{thesis-acknowledge}
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% book style knows about mainmatter
+% if you are using report style you will have to rest page numbering etc.
+\mainmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% individual chapters included here
+
+\include{thesis-introduction}
+\include{thestyle}
+\include{library}
+\include{binding}
+\include{lipsum}
+\include{thesis-conclusion}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% and of course book style knows about backmatter
+% \backmatter caused problems with appendices :-(
+% and of course report style doesn't
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\bibliographystyle{ieeetr}
+\bibliographystyle{acm}
+\bibliography{myrefs}
+
+
+\end{document}
