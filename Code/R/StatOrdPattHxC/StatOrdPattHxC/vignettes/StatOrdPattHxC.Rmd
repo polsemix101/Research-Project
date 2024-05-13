@@ -1,0 +1,137 @@
+---
+title: "StatOrdPattHxC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{StatOrdPattHxC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dpi = 700, dev = "svg",
+  fig.width=7, fig.height=4,
+  warning = FALSE, message = FALSE
+)
+```
+
+```{r setup, echo=FALSE}
+library(ggplot2)
+library(ggthemes)
+library(reshape2)
+library(tibble)
+library(dplyr)
+library(prodlim)
+library(StatOrdPattHxC)
+```
+
+# Introduction
+
+This package computes statistics of features from Ordinal Patterns.
+Currently, it provides the asymptotic variance of the Shannon, Tsallis, and Rényi entropies, and the Fisher information measure.
+With these variances, the user can apply test to check if two time series originated from similar dynamics
+The package will evolve to produce other statistical characteristics.
+
+The figure below illustrates the two main workflows.
+
+* The user can compute the ordinal patterns, then the entropy (or Fisher information measure), and then the asymptotic variance of the entropy, or
+* Can input two time series, and obtain the $p$-value of the test that verifies the hypothesis that their entropies are comparable.
+
+![Overview of functions](./Overview.pdf){width=100%}
+
+
+# Finding patterns
+
+Let us produce three time series: two from the same dynamics (white noise smoothed with a moving averages window of size $31$, shown in green and blue), and a different one (standard normally-distributed white noise, in red).
+
+```{r ThreeTimeSeries, out.width="90%", echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(1234567890, kind="Mersenne-Twister")
+
+x1 <- mov.av(rnorm(5000), order = 31) # smoothed white noise with moving average
+x2 <- mov.av(rnorm(5000), order = 31) # smoothed white noise with moving average
+wn <- rnorm(4970) # white noise, same size as the vectors above
+
+time.series <- reshape2::melt(data.frame(t=1:4970, wn, x1, x2), 
+                              measure.vars = 2:4)
+
+ggplot(subset(time.series, t>1000 & t<1300), aes(x=t, y=value, col=variable)) +
+  geom_line() +
+  ggtitle("300 observations of three time series") +
+  xlab("Time") +
+  ylab("Observations") +
+  theme_tufte() +
+  theme(legend.position = "none")
+```
+
+We compute the sequences of ordinal patterns, and from them the histogram of patterns.
+This can be done in a single step.
+The following figure shows the histograms.
+
+```{r OPsHists, out.width="90%"}
+
+OPprobs.wn <- OPprob(wn, emb=4)
+OPprobs.x1 <- OPprob(x1, emb=4)
+OPprobs.x2 <- OPprob(x2, emb=4)
+
+OPprobabilities <- reshape2::melt(data.frame(index=1:factorial(4), 
+                                             OPprobs.wn, OPprobs.x1, OPprobs.x2),
+                                  measure.vars = 2:4)
+
+ggplot(OPprobabilities, aes(x=index, y=value)) +
+  geom_col() +
+  xlab("Pattern") +
+  ylab("Proportion of patterns") +
+  facet_wrap(~variable) +
+  theme_tufte()
+```
+
+# Computing entropies
+
+This package currently has three entropies and the Fisher information measure.
+The input for computing all flavours of entropies, as well as the Fisher information measure, is a histogram.
+We will use the histograms computed in the previous step.
+
+```{r Entropies}
+# White noise
+HShannon(OPprobs.wn)
+HTsallis(OPprobs.wn, beta=2)
+HRenyi(OPprobs.wn, beta=1.8)
+HFisher(OPprobs.wn)
+
+# Moving averages
+HShannon(OPprobs.x1)
+HTsallis(OPprobs.x1, beta=2)
+HRenyi(OPprobs.x1, beta=1.8)
+HFisher(OPprobs.x1)
+```
+
+
+# Computing variances
+
+# Applying tests
+
+# Visualisation
+
+The package provides the lower and upper bounds of points in the Entropy-Complexity plane
+for embedding dimensions between $3$ and $6$.
+
+```{r Boundaries, out.width="100%"}
+data("LinfLsup")
+
+ggplot(subset(LinfLsup, Side=="Lower"), 
+       aes(x=H, y=C, col=Dimension, group=Dimension)) +
+  geom_line() +
+  geom_line(data=subset(LinfLsup, Side=="Upper"), 
+            aes(x=H, y=C, col=Dimension, group=Dimension)) +
+  xlab(expression(italic(H))) +
+  ylab(expression(italic(C))) +
+  theme_tufte()
+```
+
+# Future improvements
+
+* Compute the Statistical Complexity variance
+* Implement critical functions in C++
+* Improve checking the inputs

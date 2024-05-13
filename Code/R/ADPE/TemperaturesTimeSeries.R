@@ -6,10 +6,20 @@ library(reshape2)
 library(rstudioapi)
 library(cowplot)
 library(gtools)
+library(prodlim)
 
 setwd(dirname(getActiveDocumentContext()$path))
 print(getwd())
 source("Bandt-Pompe.R")
+
+path = "StatOrdPattHxC/StatOrdPattHxC/R/"
+
+files = list.files(paste(getwd(),path,sep=""),"\\.R$")
+
+for (i in files){
+  source(paste("C:/Users/magnu/Desktop/skole/Vuw/BA/Research-Project/Code/R/",path,i,sep=""))
+}
+source("C:/Users/magnu/Desktop/skole/Vuw/BA/Research-Project/Code/R/ADPE/AsymptoticEntropyVariancesComparison.R")
 
 #####################################################################################
 
@@ -17,319 +27,198 @@ source("Bandt-Pompe.R")
 
 meteo = read.csv("./../../../Data/CSV/weatherBig.csv")
 
-# Data date
-
-date <- as.Date(meteo[meteo$NAME == "DUBLIN PHOENIX PARK, EI",][16298:26297, "DATE"],
-                "%Y-%m-%d")
-range(date)
 
 
-# Data min
-
-meteo_dublin_min = meteo[meteo$NAME == "DUBLIN PHOENIX PARK, EI",][16298:26297, "TMIN"]
-meteo_miami_min = meteo[meteo$NAME == "MIAMI INTERNATIONAL AIRPORT, FL US",][16298:26297, "TMIN"]
-meteo_edinburgh_min = meteo[meteo$NAME == "EDINBURGH ROYAL BOTANIC GARDE, UK",][11916:21915, "TMIN"]
-
-df_data_min = data.frame(
-  "Dublin" = meteo_dublin_min,
-  "Edinburgh" = meteo_edinburgh_min,
-  "Miami" = meteo_miami_min,
-  date
-)
-
-meteo.df.melt.min <- melt(df_data_min, 
-                      measure.vars = 1:3, 
-                      variable.name = "City", 
-                      value.name = "T")
+set.seed(123)
 
 # Data max
-
+#index 16292 is 08/08/1992
 meteo_dublin_max = meteo[meteo$NAME == "DUBLIN PHOENIX PARK, EI",][16292:26297,"TMAX"]
 meteo_miami_max = meteo[meteo$NAME == "MIAMI INTERNATIONAL AIRPORT, FL US",][16292:26297,"TMAX"]
 meteo_edinburgh_max = meteo[meteo$NAME == "EDINBURGH ROYAL BOTANIC GARDE, UK",][11910:21915,"TMAX"]
+
+
 
 meteo_dublin_max = na.omit(meteo_dublin_max)
 meteo_edinburgh_max = na.omit(meteo_edinburgh_max)
 meteo_miami_max = na.omit(meteo_miami_max)
 
-temp = formationPatternMagnus(meteo_edinburgh_max,D=3,tau=1)
-n = sum(temp)
-opd = temp/n
-print(opd)
-entropy = global_complexity(opd=opd)[1]
-print(entropy)
+path = "/StatOrdPattHxC/StatOrdPattHxC/R/"
 
-#Direct entropy calculations with statcomp
-# meteo_dublin_max = na.omit(meteo_dublin_max)
-# meteo_edinburgh_max = na.omit(meteo_edinburgh_max)
-# meteo_miami_max = na.omit(meteo_miami_max)
-# 
-#
-# n = length(meteo_dublin_max)
-# for (i in 1:n){
-#   meteo_dublin_max[i] = meteo_dublin_max[i]+runif(1,0,0.1)
-# }
-# 
-# entropy = global_complexity(meteo_dublin_max,ndemb=3)[1]
-# print(entropy)
-# 
-# 
-# 
-# n = length(meteo_edinburgh_max)
-# for (i in 1:n){
-#   meteo_edinburgh_max[i] = meteo_edinburgh_max[i]+runif(1,0,0.1)
-# }
-# 
-# entropy = global_complexity(meteo_edinburgh_max,ndemb=3)[1]
-# print(entropy)
-# 
-# 
-# n = length(meteo_miami_max)
-# for (i in 1:n){
-#   meteo_miami_max[i] = meteo_miami_max[i]+runif(1,0,0.9)
-# }
-# 
-# entropy = global_complexity(meteo_miami_max,ndemb=3)[1]
-# print(entropy)
+files = list.files(paste(getwd(),path,sep=""),"\\.R$")
+
+for (i in files){
+  source(paste(getwd(),path,i,sep=""))
+}
+source("C:/Users/magnu/Desktop/skole/Vuw/BA/Research-Project/Code/R/ADPE/AsymptoticEntropyVariancesComparison.R")
 
 
-# df_data_max = data.frame(
-#   "Dublin" = meteo_dublin_max,
-#   "Edinburgh" = meteo_edinburgh_max,
-#   "Miami" = meteo_miami_max,
-#   date
-# )
-# 
-# meteo.df.melt.max <- melt(df_data_max,
-#                       measure.vars = 1:3,
-#                       variable.name = "City",
-#                       value.name = "T")
-# 
-# # Data precipitation
-# 
-# meteo_dublin_prcp = meteo[meteo$NAME == "DUBLIN PHOENIX PARK, EI",][16298:26297, "PRCP"]
-# meteo_miami_prcp = meteo[meteo$NAME == "MIAMI INTERNATIONAL AIRPORT, FL US",][16298:26297, "PRCP"]
-# meteo_edinburgh_prcp = meteo[meteo$NAME == "EDINBURGH ROYAL BOTANIC GARDE, UK",][11916:21915, "PRCP"]
-# 
-# df_data_prcp = data.frame(
-#   "Dublin" = meteo_dublin_prcp,
-#   "Edinburgh" = meteo_edinburgh_prcp,
-#   "Miami" = meteo_miami_prcp,
-#   date
-# )
-# 
-# 
-# meteo.df.melt.prcp <- melt(df_data_prcp,
-#                       measure.vars = 1:3,
-#                       variable.name = "City",
-#                       value.name = "T")
-# 
-# # Plots
-# 
-# ggplot(meteo.df.melt.min, aes(x=date, y=T, col=City)) +
-#   geom_line(linewidth=.2) +
-#   xlab("Date") +
-#   ylab("Minimum Temperature [ºF]") +
-#   facet_grid(City ~.) +
-#   theme_pander() +
-#   theme(text=element_text(size=8,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   )  +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_date(date_breaks="1 year", date_labels="%Y")
-# 
-# ggsave(file="../../Figures/PDF/MinTemperatureTimeSeries.pdf",
-#        width=30, height=9, units="cm")
-# 
-# ggplot(meteo.df.melt.max, aes(x=date, y=T, col=City)) +
-#   geom_line(linewidth=.2) +
-#   xlab("Date") +
-#   ylab("Maximum Temperature [ºF]") +
-#   facet_grid(City ~.) +
-#   theme_pander() +
-#   theme(text=element_text(size=8,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   )  +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_date(date_breaks="1 year", date_labels="%Y")
-# 
-# ggsave(file="../../Figures/PDF/MaxTemperatureTimeSeries.pdf",
-#        width=30, height=9, units="cm")
-# 
-# ggplot(meteo.df.melt.prcp, aes(x=date, y=T, col=City)) +
-#   geom_line(linewidth=.2) +
-#   xlab("Date") +
-#   ylab("Precipitation") +
-#   facet_grid(City ~., scales="free") +
-#   theme_pander() +
-#   theme(text=element_text(size=8,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   )  +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_date(date_breaks="1 year", date_labels="%Y")
-# 
-# 
-# ggsave(file="../../Figures/PDF/PrecipitationTimeSeries.pdf",
-#        width=30, height=9, units="cm")
-# 
-# #############################################################################
-# 
-# ## Histograms of ordinal patterns
-# 
-# histD3 <- function(series){
-# 
-#   p.patterns = formationPattern(series, D = 3, tau = 1, 0)
-#   n.symbols = dim(p.patterns)[1]
-#   symbol = matrix(c(0,1,2,
-#                     0,2,1,
-#                     1,0,2,
-#                     1,2,0,
-#                     2,0,1,
-#                     2,1,0), ncol = 3, byrow = TRUE)
-#   index.rep = array(0, n.symbols)
-# 
-#   for(i in 1:n.symbols){
-#     for(j in 1:6){
-#       if(all(p.patterns[i,] == symbol[j, ])){
-#         index.rep[i]=j
-#         break
-#       }
-#     }
+dataPath = "./../../../Data/CSV/weather.csv"
+data = read.csv(dataPath)
+data = select(data, -STATION)
+
+data["NAME"] <- replace(data["NAME"], data["NAME"]=="MIAMI INTERNATIONAL AIRPORT, FL US","Miami")
+data["NAME"] <- replace(data["NAME"], data["NAME"]=="EDINBURGH ROYAL BOTANIC GARDE, UK","Edinburgh")
+data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","Dublin")
+
+#remove na values
+data <- na.omit(data)
+
+
+location = list("Miami","Edinburgh","Dublin")
+
+
+#for loop for counting number of patterns containing identical values for d=3
+#na.omit() needs to be activated above
+# count = c()
+# for (i in location){
+#   tmax = as.numeric(unlist(data[data["NAME"]==i,]["TMAX"]))
+#   n = length(tmax)
+#   counter=0
+#   for (j in 1:(n-2)){
+#     if(tmax[j]==tmax[j+1] | tmax[j]==tmax[j+2] | tmax[j+1]==tmax[j+2])
+#       counter = counter + 1
 #   }
-# 
-#   index.rep = index.rep[1:n.symbols]
-#   index.rep = data.frame(i = index.rep)
-#   return(index.rep)
+#   count = append(count,counter)
 # }
-# 
-# 
-# # Min
-# 
-# hist_dublin_min = histD3(meteo_dublin_min)
-# hist_edinburgh_min = histD3(meteo_edinburgh_min)
-# hist_miami_min = histD3(meteo_miami_min)
-# 
-# seqs.symbols.min <- data.frame(
-#   Dublin = unlist(hist_dublin_min),
-#   Edinburgh = unlist(hist_edinburgh_min),
-#   Miami = unlist(hist_miami_min)
-# )
-# 
-# meltMin <- melt(seqs.symbols.min, variable.name = "City")
-# 
-# PropMin <- ggplot(meltMin, aes(x=value, col=City, fill=City)) +
-#   geom_histogram(aes(y=..density..), alpha=.9,
-#                  bins=6, binwidth=.95,
-#                  position=position_dodge(.85)) +
-#   theme_pander() +
-#   theme(text=element_text(size=24,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   ) +
-#   xlab("Pattern") + ylab("Proportion") +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_fill_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_continuous(breaks=1:6,
-#                      labels=c(expression(pi[1]),
-#                               expression(pi[2]),
-#                               expression(pi[3]),
-#                               expression(pi[4]),
-#                               expression(pi[5]),
-#                               expression(pi[6]))) +
-#   ylim(0, .57)
-# 
-# 
-# ggsave(file="../../Figures/PDF/histMin.pdf", width=9, height=5, units="cm")
-# 
-# # Max
-# 
-# hist_dublin_max = histD3(meteo_dublin_max)
-# hist_edinburgh_max = histD3(meteo_edinburgh_max)
-# hist_miami_max = histD3(meteo_miami_max)
-# 
-# seqs.symbols.max <- data.frame(
-#   Dublin = unlist(hist_dublin_max),
-#   Edinburgh = unlist(hist_edinburgh_max),
-#   Miami = unlist(hist_miami_max)
-# )
-# 
-# meltMax <- melt(seqs.symbols.max, variable.name = "City")
-# 
-# PropMax <- ggplot(meltMax, aes(x=value, col=City, fill=City)) +
-#   geom_histogram(aes(y=..density..), alpha=.9,
-#                  bins=6, binwidth=.95,
-#                  position=position_dodge(.85)) +
-#   theme_pander() +
-#   theme(text=element_text(size=24,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   ) +
-#   xlab("Pattern") + ylab("Proportion") +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_fill_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_continuous(breaks=1:6,
-#                      labels=c(expression(pi[1]),
-#                               expression(pi[2]),
-#                               expression(pi[3]),
-#                               expression(pi[4]),
-#                               expression(pi[5]),
-#                               expression(pi[6]))) +
-#   ylim(0, .57)
-# 
-# 
-# ggsave(file="../../Figures/PDF/histMax.pdf", width=9, height=5, units="cm")
-# 
-# # Prcp
-# 
-# hist_dublin_prcp = histD3(meteo_dublin_prcp)
-# hist_edinburgh_prcp = histD3(meteo_edinburgh_prcp)
-# hist_miami_prcp = histD3(meteo_miami_prcp)
-# 
-# seqs.symbols.prcp <- data.frame(
-#   Dublin = unlist(hist_dublin_prcp),
-#   Edinburgh = unlist(hist_edinburgh_prcp),
-#   Miami = unlist(hist_miami_prcp)
-# )
-# 
-# meltPrcp <- melt(seqs.symbols.prcp, variable.name = "City")
-# 
-# PropPrecipitation <- ggplot(meltPrcp, aes(x=value, col=City, fill=City)) +
-#   geom_histogram(aes(y=..density..), alpha=.9,
-#                  bins=6, binwidth=.95,
-#                  position=position_dodge(.85)) +
-#   theme_pander() +
-#   theme(text=element_text(size=24,
-#                           family="serif"),
-#         panel.grid.minor = element_blank(),
-#         legend.position = "none",
-#         legend.title = element_blank()
-#   ) +
-#   xlab("Pattern") + ylab("Proportion") +
-#   scale_color_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_fill_manual(values = c("Dublin" = "#1b9e77", "Edinburgh" = "#7570b3", "Miami" = "#d95f02")) +
-#   scale_x_continuous(breaks=1:6,
-#                      labels=c(expression(pi[1]),
-#                               expression(pi[2]),
-#                               expression(pi[3]),
-#                               expression(pi[4]),
-#                               expression(pi[5]),
-#                               expression(pi[6]))) +
-#   ylim(0, .57)
-# 
-# ggsave(file="../../Figures/PDF/histPrcp.pdf", width=9, height=5, units="cm")
+# print(count)
+
+#add noise that only effect patterns with identical values. Both statcomp and pdc will always assign a observation containing
+#multiple identical values to the same pattern instead of a more evenly 50/50 divide between the two possible patterns.
+
+#commenting this line changes this entropy vastly especially for miami
+# set.seed(123)
+# data[,"TMAX"]=data[,"TMAX"]+runif(nrow(data),0,0.5)
+
+statcompOrdinalPattern = c()
+
+n2 = length(meteo_miami_max)
+rand = runif(n2,0,0.5)
+meteo_miami_max=meteo_miami_max+rand
+data[data["NAME"]=="Miami","TMAX"]=data[data["NAME"]=="Miami","TMAX"]+rand
+
+statcompOrdinalPattern = append(statcompOrdinalPattern,global_complexity(meteo_miami_max,ndemb=3)[1])
+
+
+n1 = length(meteo_edinburgh_max)
+rand = runif(n1,0,0.5)
+
+meteo_edinburgh_max=meteo_edinburgh_max+rand
+data[data["NAME"]=="Edinburgh","TMAX"]=data[data["NAME"]=="Edinburgh","TMAX"]+rand
+
+statcompOrdinalPattern = append(statcompOrdinalPattern,global_complexity(meteo_edinburgh_max,ndemb=3)[1])
+
+n = length(meteo_dublin_max)
+rand = runif(n,0,0.5)
+meteo_dublin_max=meteo_dublin_max+rand
+data[data["NAME"]=="Dublin","TMAX"]=data[data["NAME"]=="Dublin","TMAX"]+rand
+
+statcompOrdinalPattern = append(statcompOrdinalPattern,global_complexity(meteo_dublin_max,ndemb=3)[1])
+
+
+
+
+names(statcompOrdinalPattern) = c("miami","edinburgh","dublin")
+print(statcompOrdinalPattern)
+
+
+d = 3 
+#plot raw data
+#p <- ggplot(data=data,aes(DATE,TMAX,group=1))+geom_line()
+#p + facet_grid(rows=vars(NAME))
+
+
+
+
+#By using both na.omit() and adding tiny noise to all data points statcomp and pdc behaves in the same way, however if either
+#of the two preproccesing is lacking they start giving different entropies. The tiny noise is very important since 40% for miami and around 20-25%
+#Of the patterns for dublin and edinburgh have identical values. Statcomp and pdc assign these sets of observation to different patterns, which causes an error. 
+#NA values are also handled differently between them
+
+df = data.frame()
+d = 3
+
+switch = c(1,4,2,5,3,6)
+for (i in location){
+  tmax = as.numeric(unlist((data[data["NAME"]==i,"TMAX"])))
+  opd = ordinal_pattern_distribution(tmax,d)
+  n = sum(opd)
+  opd = opd[switch]*(1/n)
+  opd1 = OPprob(tmax,d)
+  entropyComplexity = global_complexity(opd=opd)[1:2]
+  a = sigma2q(tmax,d,"S")
+  oldVariance = v.n.q(n,d,opd) #function from ADPE/AsymptoticEntropyVariancesComparison.R
+  newVariance = sigma.n.q(n,d,opd) #function from ADPE/AsymptoticEntropyVariancesComparison.R
+  oldSd = oldVariance**(1/2) #standard deviation
+  newSd = newVariance**(1/2)#/(n**(1/2)) #standard deviation
+  z = qnorm(1-0.01/2) #z score
+  oldCI = z*oldSd #One side of the confidence interval
+  newCI = z*newSd #One side of the confidence interval
+  df = rbind(df,c(entropyComplexity,oldVariance,newVariance,2*oldCI,2*newCI))
+}
+df$location = location
+colnames(df) = c("entropy","complexity","oldVariance","newVariance","oldCILength","newCILength","location")
+
+print(df)
+
+
+# temp = formationPatternMagnus(meteo_edinburgh_max,D=3,tau=1)
+# n = sum(temp)
+# opd = temp/n
+# print(opd)
+# entropy = global_complexity(opd=opd)[1]
+# print(entropy)
+
+
+
+
+
+
+histD3 <- function(series){
+
+  p.patterns = formationPattern(series, D = 3, tau = 1, 0)
+  n.symbols = dim(p.patterns)[1]
+  symbol = matrix(c(0,1,2,
+                    0,2,1,
+                    1,0,2,
+                    1,2,0,
+                    2,0,1,
+                    2,1,0), ncol = 3, byrow = TRUE)
+  index.rep = array(0, n.symbols)
+
+  for(i in 1:n.symbols){
+    for(j in 1:6){
+      if(all(p.patterns[i,] == symbol[j, ])){
+        index.rep[i]=j
+        break
+      }
+    }
+  }
+
+  index.rep = index.rep[1:n.symbols]
+  index.rep = data.frame(i = index.rep)
+  return(index.rep)
+}
+
+hist_dublin_max = histD3(meteo_dublin_max)
+hist_edinburgh_max = histD3(meteo_edinburgh_max)
+hist_miami_max = histD3(meteo_miami_max)
+
+
+hist_entropy = c()
+for (j in c(hist_dublin_max,hist_edinburgh_max,hist_miami_max)){
+  a = c(0,0,0,0,0,0)
+  for (i in unlist(j)){
+    a[i] = a[i]+1
+  }
+  n = sum(a)
+  a = a*(1/n)
+  entropy = global_complexity(opd=a)[1]
+  hist_entropy = append(hist_entropy,entropy)
+}
+names(hist_entropy) = c("dublin","edinburgh","miami")
+print(hist_entropy)
+
 
 
 

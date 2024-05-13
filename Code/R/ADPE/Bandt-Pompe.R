@@ -130,7 +130,7 @@ ordinal_pattern <-function(weightAndPatterns){
   return(weights)
 }
 
-#Only used for magnus' version
+#Only used for magnus' version, splits ties evenly among possible patterns
 formationPatternMagnus <- function(series, D, tau){
   i=1
   n = length(series)
