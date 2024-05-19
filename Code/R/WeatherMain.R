@@ -17,8 +17,8 @@ library(StatOrdPattHxC)
 
 setwd(dirname(getActiveDocumentContext()$path))
 
-#devtools::check("./StatOrdPattHxC/")
-#devtools::install("./StatOrdPattHxC/", reload = TRUE, build_vignettes = TRUE, build = TRUE)
+# devtools::check("./StatOrdPattHxC/")
+# devtools::install("./StatOrdPattHxC/", reload = TRUE, build_vignettes = TRUE, build = TRUE)
 
 # }
 source("./ADPE/Bandt-Pompe.R")
@@ -27,10 +27,10 @@ source("./ADPE/TemperaturesTimeSeries.R")
 
 dataPath = "./../../Data/CSV/weather.csv"
 
-runEntropyTable = T
+runEntropyTable = 
 runConfidenceIntervalPlot = T
 runTest = F
-runNoise = T
+runNoise = F
 
 set.seed(123)
 #EntropyTable Code

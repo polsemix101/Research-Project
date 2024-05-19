@@ -12,11 +12,11 @@
 #' # Time series
 #' set.seed(1234567890, kind="Mersenne-Twister")
 #' x <- rnorm(1000) # white noise
-#' y <- mov.av(x, order=51) # smoothed with moving averages
+#' y <- mov.av(x, order=51) # smoothed with moving averages 
 #' # Asymptotic variances of their Shannon entropies
 #' sigma2q(x, emb=4, ent="S")
 #' sigma2q(y, emb=4, ent="S")
-
+#' 
 
 sigma2q <- function(TS, emb, ent, beta){
 
@@ -52,4 +52,5 @@ sigma2q <- function(TS, emb, ent, beta){
 
   return(sig)
 }
+
 
