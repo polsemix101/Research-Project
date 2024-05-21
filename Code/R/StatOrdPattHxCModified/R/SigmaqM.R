@@ -7,7 +7,7 @@
 #'
 
 path = "./StatOrdPattHxCModified/R/"
-files = c("Bandt-PompeModified.R","Bandt-PompeModified.R","PDmatrix.R")
+files = c("Bandt-PompeM.R","PDmatrixM.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }

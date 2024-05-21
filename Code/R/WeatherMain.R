@@ -21,10 +21,9 @@ library(pkgload)
 # devtools::check("./StatOrdPattHxCModified/R/Test/")
 # devtools::install("./StatOrdPattHxCModified/R/Test/")
 
-setwd(dirname(getActiveDocumentContext()$path ))
+#setwd(dirname(getActiveDocumentContext()$path ))
 
 files = list.files("./StatOrdPattHxCModified/R/")
-
 for(i in files){
   source(paste("./StatOrdPattHxCModified/R/",i,sep=""))
 }
@@ -200,12 +199,18 @@ if(runConfidenceIntervalPlot){
     newSd = newVariance**(1/2)#/(n**(1/2)) #standard deviation
     z = qnorm(1-0.01/2) #z score
     newCI = z*newSd #One side of the confidence interval
-    df = rbind(df,c(entropyComplexity,oldVariance,sigmanq,newVariance,2*oldCI,2*newCI))
+    df = rbind(df,c(entropyComplexity,newVariance,newCI))
   }
   df$location = location
-  colnames(df) = c("entropy","complexity","oldVariance","sigmanq","newVariance","oldCILength","newCILength","location")
-
-  print(df)
+  colnames(df) = c("entropy","complexity","newVariance","CILength1Side","location")
+  pdf("./../../Figures/PDFjpg/Weather/confidenceIntervalPlot.pdf")
+  ggplot(df, aes(x = entropy, y = complexity,fill=location)) + geom_point()
+    #geom_dotplot(binaxis = "x", stackdir = "center", dotsize = 0.8) +
+    geom_errorbar(aes(xmin = entropy - CILength1Side, 
+                      xmax = entropy + CILength1Side), 
+                  width = 0.2) +
+    labs(title="HxC Plane with confidence interval for entropy",x = "Entropy", y = "Complexity")
+  dev.off()
 }
 
 
@@ -337,7 +342,7 @@ if(runWhiteNoise){
 }
 
 
-################################################################################
+#####################################################################################
 
 if(runPvalTheoretical){
   d=3
@@ -370,6 +375,9 @@ if(runPvalTheoretical){
   colnames(pvalDf) = c("Iteration","Miami-Edinburgh","Miami-Dublin","Edinburgh-Dublin")
   as.pdf(pvalDf,stem="pValuesTheoreticalTest",dir="./../../Figures/PDFjpg/Weather/")
 }
+
+#####################################################################################
+
 
 if(runPvalRandom){
   d=3

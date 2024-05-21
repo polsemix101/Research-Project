@@ -19,7 +19,7 @@
 #' 
 
 path = "./StatOrdPattHxCModified/R/"
-files = c("Sigmaq.R","Bandt-PompeModified.R")
+files = c("SigmaqM.R","Bandt-PompeM.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }

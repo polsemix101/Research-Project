@@ -15,7 +15,7 @@
 #'
 #'
 path = "./StatOrdPattHxC/R/"
-files = c("OPseq.R")
+files = c("OPseqM.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }

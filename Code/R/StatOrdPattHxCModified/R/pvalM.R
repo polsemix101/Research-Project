@@ -9,7 +9,7 @@
 #' @export
 #'
 path = "./StatOrdPattHxCModified/R/"
-files = c("Bandt-PompeModified.R","HShannon.R","sigma2q.R")
+files = c("Bandt-PompeM.R","HShannon.R","sigma2qM.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }
