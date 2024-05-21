@@ -8,12 +8,13 @@
 #'
 #' @export
 #'
-
-path = "./StatOrdPattHxC/R/"
-files = c("Sigmaq.R","OPprob.R","HShannon.R","sigma2q.R","HTsallis.R","HFisher.R")
+path = "./StatOrdPattHxCModified/R/"
+files = c("Bandt-PompeModified.R","HShannon.R","sigma2q.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }
+
+
 
 pval <- function(TSx, TSy, emb, ent, beta){
 
@@ -21,12 +22,10 @@ pval <- function(TSx, TSy, emb, ent, beta){
 
   n_x <- length(TSx) - emb + 1
   n_y <- length(TSy) - emb + 1
-
   # Compute the OP probability vectors
 
-  q_x <- OPprob(TS = TSx, emb = emb)
-  q_y <- OPprob(TS = TSy, emb = emb)
-
+  q_x <- formationPatternM(TSx, emb,output=0)
+  q_y <- formationPatternM(TSy, emb,output=0)
   # Compute asymptotic means and variances
 
   switch(ent,
@@ -34,10 +33,10 @@ pval <- function(TSx, TSy, emb, ent, beta){
          "S" = {
 
            mu_x <- HShannon(q_x)
-           sig2_x <- sigma2q(TS = TSx, emb = emb, ent = "S")
+           sig2_x <- sigma2qM(TS = TSx, emb = emb, ent = "S")
 
            mu_y <- HShannon(q_y)
-           sig2_y <- sigma2q(TS = TSy, emb = emb, ent = "S")
+           sig2_y <- sigma2qM(TS = TSy, emb = emb, ent = "S")
 
          },
 
@@ -55,32 +54,30 @@ pval <- function(TSx, TSy, emb, ent, beta){
          "R" = {
 
            mu_x <- sum(q_x^beta)
-           sig2_x <- sigma2q(TS = TSx, emb = emb, ent = "R", beta = beta)
+           sig2_x <- sigma2qM(TS = TSx, emb = emb, ent = "R", beta = beta)
 
            mu_y <- sum(q_y^beta)
-           sig2_y <- sigma2q(TS = TSy, emb = emb, ent = "R", beta = beta)
+           sig2_y <- sigma2qM(TS = TSy, emb = emb, ent = "R", beta = beta)
 
          },
 
          "F" = {
 
            mu_x <- HFisher(q_x)
-           sig2_x <- sigma2q(TS = TSx, emb = emb, ent = "F")
+           sig2_x <- sigma2qM(TS = TSx, emb = emb, ent = "F")
 
            mu_y <- HFisher(q_y)
-           sig2_y <- sigma2q(TS = TSy, emb = emb, ent = "F")
+           sig2_y <- sigma2qM(TS = TSy, emb = emb, ent = "F")
 
          }
 
   )
   # Compute the statistic
 
-
-
   s <- (mu_x - mu_y) / sqrt(sig2_x / n_x + sig2_y / n_y)
 
   # Compute the p-value
-
+  
   return(2 - 2 * pnorm(abs(s)))
 }
 

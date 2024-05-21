@@ -5,27 +5,24 @@
 #' @param emb embedding dimension
 #' @returns A covariance matrix
 
-path = "./StatOrdPattHxC/R/"
-files = c("Qmatrix.R","OPprob.R")
+path = "./StatOrdPattHxCModified/R/"
+files = c("Bandt-PompeModified.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }
 
-
-Sigma <- function(TS, emb){
-
+SigmaM <- function(TS, emb){
   # Find OP probabilities
-  q <- OPprob(TS, emb)
-  
+  q = formationPatternM(TS, emb,output=0)
+
   # Find sum of Q matrices
   k <- factorial(emb)
   Q_lag <- matrix(0, nrow = k, ncol = k)
 
-  for (l in 1:(emb - 1)){
-    Qaux <- Qmatrix(TS, emb, l)
+  for (l in 1:(emb-1)){
+    Qaux <- QmatrixM(formationPatternM(TS,emb,l,output=1))
     Q_lag <- Q_lag + Qaux + t(Qaux)
   }
-
   return(diag(q) - (2 * emb - 1) * q %*% t(q) + Q_lag)
 }
 

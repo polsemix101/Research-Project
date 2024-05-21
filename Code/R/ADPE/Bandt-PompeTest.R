@@ -130,61 +130,9 @@ ordinal_pattern <-function(weightAndPatterns){
   return(weights)
 }
 
-Qmatrix <- function(seq){
-  d = ncol(seq)-1
-  n = nrow(seq)
-  i=1
-  Q = matrix(0,nrow=factorial(d),ncol=factorial(d))
-  possiblePatterns = permutations(d,d,v=1:d)
-
-  while(i<=n){
-    w1=seq[i,1] #weight of each pattern in first pattern index
-    n_p1 = round(w1**(-1)) #number of possible patterns starting from i
-    p1 = seq[i:(i+n_p1-1),(2:(d+1))] #possible patterns 1
-    
-    p1index = c()
-    for(j in 1:n_p1){
-      row = p1[j,]
-      index = 1:factorial(d)
-      for(k in 1:d){
-        index = intersect(index,which(row[k]==possiblePatterns[,k]))
-      }
-      p1index = append(p1index,index)
-    }
-    
-    
-    i=i+n_p1 #find possible pattern 2
-    if(i>n){
-      break
-    }
-    
-    w2=seq[i,1]
-    n_p2 = round(w2**(-1))
-    p2 = seq[i:(i+n_p2-1),(2:(d+1))]
-    p2index= c()
-    for(j in 1:n_p2){
-      row = p2[j,]
-      index = 1:factorial(d)
-      for(k in 1:d){
-        index = intersect(index,which(row[k]==possiblePatterns[,k]))
-      }
-      p2index = append(p2index,index)
-    }
-    
-    
-    wQ = w1*w2 #weight of each transition in Q - they will all always be the same value
-    for(i1 in 1:length(p1index)){
-      for(i2 in 1:length(p2index)){
-        Q[p1index[i1],p2index[i2]] = Q[p1index[i1],p2index[i2]]+wQ
-      }
-    }
-  }
-  return(Q/sum(Q))
-}
-
 
 #Only used for magnus' version, splits ties evenly among possible patterns
-formationPatternMagnus <- function(series, D, tau,output=0){ #Output 0 gives the ordinal pattern distribution, output 1 gives the sequences of patterns
+formationPatternMagnus <- function(series, D, tau){
   i=1
   n = length(series)
   p_patterns = matrix(nrow = 0, ncol = D+1)
@@ -199,12 +147,12 @@ formationPatternMagnus <- function(series, D, tau,output=0){ #Output 0 gives the
     i=i+1
   }
   p_patterns = na.omit(p_patterns)
-  if(output==1){
-    return(p_patterns)
-  } else {
-    return(ordinal_pattern(p_patterns))
-  }
+  #print(p_patterns)
+  result = ordinal_pattern(p_patterns)
+  return(result)
+  
 }
+
 
 
 # Bandt-Pompe function ---------------------------------------------------------------------------------

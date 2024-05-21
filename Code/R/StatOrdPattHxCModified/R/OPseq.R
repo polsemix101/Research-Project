@@ -17,16 +17,16 @@
 
 
 OPseq <- function(TS, emb, lag=1){
-  # number of OP for lag = 1
-  el <- length(TS) - emb + 1
+  
+  
+  # number of OP 
+  el <- length(TS) - (emb-1)*lag
 
-  # OP sequence for lag = 1
   seqOP <- vector()
   for (i in 1:el){
-    seqOP[i] <- pi_i(ind_pos(TS[i:(i + emb - 1)]))
+    seqOP[i] <- pi_i(ind_pos(TS[seq(i,(i + emb - 1),by=lag)]))
   }
 
-  # OP sequence for the given lag
-  return(seqOP[seq(1, el, lag)])
+  return(seqOP)
 }
 

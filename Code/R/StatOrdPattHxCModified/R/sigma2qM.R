@@ -18,21 +18,18 @@
 #' sigma2q(y, emb=4, ent="S")
 #' 
 
-path = "./StatOrdPattHxC/R/"
-files = c("Sigmaq.R")
+path = "./StatOrdPattHxCModified/R/"
+files = c("Sigmaq.R","Bandt-PompeModified.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }
 
-
-sigma2q <- function(TS, emb, ent, beta){
+sigma2qM <- function(TS, emb, ent, beta){
 
   # Find the number of OP
   n <- length(TS) - emb + 1
-
   # Compute the covariance matrix
-  S <- Sigmaq(TS, emb, ent, beta)
-
+  S <- SigmaqM(TS, emb, ent, beta)
   # Compute the
   switch(ent,
 

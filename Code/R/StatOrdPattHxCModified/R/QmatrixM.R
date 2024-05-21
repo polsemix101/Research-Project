@@ -13,16 +13,11 @@
 #' @param lag the lag
 #' @returns an \eqn{m!\times m!} matrix of probabilities
 #'
-#'
-path = "./StatOrdPattHxC/R/"
-files = c("OPseq.R")
-for(i in files){
-  source(paste(path,i,sep=""))  
-}
+
 
 
 Qmatrix <- function(TS, emb, lag){
-  OP <- OPseqModified(TS, emb, lag)
+  OP <- OPseq(TS, emb, lag)
 
   k <- factorial(emb)
   Qfreq <- matrix(0, nrow = k, ncol = k)

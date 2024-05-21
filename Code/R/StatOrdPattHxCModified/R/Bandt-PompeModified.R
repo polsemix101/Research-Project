@@ -130,7 +130,7 @@ ordinal_pattern <-function(weightAndPatterns){
   return(weights)
 }
 
-Qmatrix <- function(seq){
+QmatrixM <- function(seq){
   d = ncol(seq)-1
   n = nrow(seq)
   i=1
@@ -143,15 +143,22 @@ Qmatrix <- function(seq){
     p1 = seq[i:(i+n_p1-1),(2:(d+1))] #possible patterns 1
     
     p1index = c()
-    for(j in 1:n_p1){
-      row = p1[j,]
+    if(n_p1>1){
+      for(j in 1:n_p1){
+        row = p1[j,]
+        index = 1:factorial(d)
+        for(k in 1:d){
+          index = intersect(index,which(row[k]==possiblePatterns[,k]))
+        }
+        p1index = append(p1index,index)
+      }
+    } else {
       index = 1:factorial(d)
       for(k in 1:d){
-        index = intersect(index,which(row[k]==possiblePatterns[,k]))
+        index = intersect(index,which(p1[k]==possiblePatterns[,k]))
       }
       p1index = append(p1index,index)
     }
-    
     
     i=i+n_p1 #find possible pattern 2
     if(i>n){
@@ -162,11 +169,19 @@ Qmatrix <- function(seq){
     n_p2 = round(w2**(-1))
     p2 = seq[i:(i+n_p2-1),(2:(d+1))]
     p2index= c()
-    for(j in 1:n_p2){
-      row = p2[j,]
+    if(n_p2>1){
+      for(j in 1:n_p2){
+        row = p2[j,]
+        index = 1:factorial(d)
+        for(k in 1:d){
+          index = intersect(index,which(row[k]==possiblePatterns[,k]))
+        }
+        p2index = append(p2index,index)
+      }
+    } else {
       index = 1:factorial(d)
       for(k in 1:d){
-        index = intersect(index,which(row[k]==possiblePatterns[,k]))
+        index = intersect(index,which(p2[k]==possiblePatterns[,k]))
       }
       p2index = append(p2index,index)
     }
@@ -184,7 +199,7 @@ Qmatrix <- function(seq){
 
 
 #Only used for magnus' version, splits ties evenly among possible patterns
-formationPatternMagnus <- function(series, D, tau,output=0){ #Output 0 gives the ordinal pattern distribution, output 1 gives the sequences of patterns
+formationPatternM <- function(series, D, tau=1,output=0){ #Output 0 gives the ordinal pattern distribution, output 1 gives the sequences of patterns
   i=1
   n = length(series)
   p_patterns = matrix(nrow = 0, ncol = D+1)
@@ -202,7 +217,8 @@ formationPatternMagnus <- function(series, D, tau,output=0){ #Output 0 gives the
   if(output==1){
     return(p_patterns)
   } else {
-    return(ordinal_pattern(p_patterns))
+    temp = ordinal_pattern(p_patterns)
+    return(temp/sum(temp))
   }
 }
 
@@ -380,6 +396,32 @@ hist_prop <- function(series, D, tau = 1){
     }
   }
   
+  index.rep = index.rep[1:n.symbols]
+  index.rep = data.frame(i = index.rep)
+  return(index.rep)
+}
+
+histD3 <- function(series){
+
+  p.patterns = formationPattern(series, D = 3, tau = 1, 0)
+  n.symbols = dim(p.patterns)[1]
+  symbol = matrix(c(0,1,2,
+                    0,2,1,
+                    1,0,2,
+                    1,2,0,
+                    2,0,1,
+                    2,1,0), ncol = 3, byrow = TRUE)
+  index.rep = array(0, n.symbols)
+
+  for(i in 1:n.symbols){
+    for(j in 1:6){
+      if(all(p.patterns[i,] == symbol[j, ])){
+        index.rep[i]=j
+        break
+      }
+    }
+  }
+
   index.rep = index.rep[1:n.symbols]
   index.rep = data.frame(i = index.rep)
   return(index.rep)

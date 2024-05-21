@@ -6,23 +6,22 @@
 #' @param beta parameter for the Tsallis and Rényi entropies
 #'
 
-path = "./StatOrdPattHxC/R/"
-files = c("Sigma.R","OPprob.R","PDmatrix.R")
+path = "./StatOrdPattHxCModified/R/"
+files = c("Bandt-PompeModified.R","Bandt-PompeModified.R","PDmatrix.R")
 for(i in files){
   source(paste(path,i,sep=""))  
 }
 
-
-Sigmaq <- function(TS, emb, ent, beta){
+SigmaqM <- function(TS, emb, ent, beta){
   # Compute Sigma matrix
-  S <- Sigma(TS, emb)
+  S <- SigmaM(TS, emb)
 
   # Compute vector of probabilities
-  qvec <- OPprob(TS, emb)
+  qvec <- formationPatternM(TS, emb,output=0)
+
 
   # Compute matrix of partial derivatives
-  J <- PDmatrix(q = qvec, ent, beta)
-  
+  J <- PDmatrixM(q = qvec, ent, beta)
   return(J %*% S %*% t(J))
 }
 
