@@ -16,12 +16,12 @@ library(latexpdf)
 library(roxygen2)
 library(devtools)
 library(pkgload)
-#library(StatOrdPattHxC)
+library(StatOrdPattHxC)
 
 # devtools::check("./StatOrdPattHxCModified/R/Test/")
 # devtools::install("./StatOrdPattHxCModified/R/Test/")
 
-#setwd(dirname(getActiveDocumentContext()$path ))
+setwd(dirname(getActiveDocumentContext()$path ))
 
 files = list.files("./StatOrdPattHxCModified/R/")
 for(i in files){
@@ -38,7 +38,7 @@ for(i in files){
 dataPath = "./../../Data/CSV/weather.csv"
 
 runEntropyTable = F
-runConfidenceIntervalPlot = F
+runConfidenceIntervalPlot = T
 runNoise = F
 runWhiteNoise = F
 runPvalTheoretical = F
@@ -182,8 +182,6 @@ if(runConfidenceIntervalPlot){
 
   data <- na.omit(data)
 
-  data[,"TMAX"]=data[,"TMAX"]+runif(nrow(data),0,0.5)
-
   location = c("Miami","Edinburgh","Dublin")
 
   df = data.frame()
@@ -191,9 +189,8 @@ if(runConfidenceIntervalPlot){
   switch = c(1,4,2,5,3,6) #statcomp has a different ordinal pattern order then article implementation
   for(i in location){
     tmax = as.numeric(unlist((data[data["NAME"]==i,"TMAX"])))
-    opd = ordinal_pattern_distribution(tmax,ndemb=d)
-    n = sum(opd)
-    opd = opd[switch]*(1/n)
+    opd = formationPatternM(tmax,d)
+    n=length(tmax)-d+1
     entropyComplexity = global_complexity(opd=opd)[1:2]
     newVariance = sigma2q(tmax,d,"S")/n
     newSd = newVariance**(1/2)#/(n**(1/2)) #standard deviation
@@ -203,13 +200,15 @@ if(runConfidenceIntervalPlot){
   }
   df$location = location
   colnames(df) = c("entropy","complexity","newVariance","CILength1Side","location")
+  limitMin = LinfLsup[which((LinfLsup$Dimension==d & LinfLsup$Side=="Lower"& LinfLsup$H>0.963)),]
+  limitMax = LinfLsup[which((LinfLsup$Dimension==d & LinfLsup$Side=="Upper" & LinfLsup$H>0.963)),]
   pdf("./../../Figures/PDFjpg/Weather/confidenceIntervalPlot.pdf")
-  ggplot(df, aes(x = entropy, y = complexity,fill=location)) + geom_point()
-    #geom_dotplot(binaxis = "x", stackdir = "center", dotsize = 0.8) +
-    geom_errorbar(aes(xmin = entropy - CILength1Side, 
-                      xmax = entropy + CILength1Side), 
-                  width = 0.2) +
-    labs(title="HxC Plane with confidence interval for entropy",x = "Entropy", y = "Complexity")
+  p <- ggplot(df,aes(entropy,complexity,color=location))+geom_point()+
+    geom_errorbar(aes(xmin=entropy-CILength1Side,xmax=entropy+CILength1Side)) +
+    labs(title="HxC plane with CI for the three locations")
+  p <- p+geom_line(mapping=aes(x=H,y=C,color="Boundary"),data=limitMin)
+  p <- p+geom_line(mapping=aes(x=H,y=C,color="Boundary"),data=limitMax)
+  print(p)
   dev.off()
 }
 
