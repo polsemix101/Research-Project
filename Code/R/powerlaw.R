@@ -1,10 +1,18 @@
 library(statcomp)
-library(StatOrdPattHxC)
+#library(StatOrdPattHxC)
 library(ggplot2)
 library(rstudioapi)
+library(tidyverse)
+library(prodlim)
 
 
 setwd(dirname(getActiveDocumentContext()$path ))
+
+files = list.files("./StatOrdPattHxC/R/")
+
+for(i in files){
+  source(paste("./StatOrdPattHxC/R/",i,sep=""))
+}
 
 set.seed(123)
 k1=seq(1,5,by=2)
@@ -13,6 +21,9 @@ m1 = length(k1)
 n=1000
 iterations=10
 d=3
+
+pwTest = powernoise(5,n)[["x"]]
+print(global_complexity(pwTest,ndemb=3)[1])
 
 for(i3 in 1:m1){
   rejectionList = c()
@@ -42,8 +53,8 @@ for(i3 in 1:m1){
   plot(k2[1:m2],rejectionList,xlab="k value of second power law series",ylab="Rejection frequency"
        ,pch=19,main="Testing of entropic hypothesis",
        sub=paste("k=",k1[i3]," for first power law series, n = ",n,", iterations = ",iterations,sep=""))
-  
-  
+  dev.off()
+  pdf(paste("./../../Figures/PDFjpg/powerlaw/NaNPlot,k1=",k1[i3],", n=",n,", iterations=",iterations,".pdf",sep=""))
   plot(k2[1:m2],NaNlist,xlab="k value of second power law series",ylab="NaN frequency"
        ,pch=19,main="Frequency of NaN pvalues in above testing",
        sub=paste("k = ",k1[i3]," for first power law series, n = ",n,", iterations = ",iterations,sep=""))

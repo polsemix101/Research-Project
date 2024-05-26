@@ -36,7 +36,6 @@ OPseqModified <- function(TS,emb,lag=1){
   
   seqOP <- c()
   for (i in 1:el){
-    #print(TS[seq(i,(i + (emb-1)*lag),by=lag)])
     seqOP <- append(seqOP,pi_i(ind_pos(TS[seq(i,(i + (emb-1)*lag),by=lag)])))
   }
   

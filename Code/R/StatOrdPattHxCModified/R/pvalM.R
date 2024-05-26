@@ -16,7 +16,7 @@ for(i in files){
 
 
 
-pval <- function(TSx, TSy, emb, ent, beta){
+pvalM <- function(TSx, TSy, emb, ent, beta){
 
   # Compute the length of the OP sequences
 

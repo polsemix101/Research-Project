@@ -29,8 +29,8 @@ Qmatrix <- function(TS, emb, lag){
 
   for(i in 1:k){
     for(j in 1:k){
-      s <- which(OP == i)
-      r <- which(OP[s+1] == j)
+      s <- which(OP[1:(length(OP)-lag)] == i)
+      r <- which(OP[s+lag] == j)
       Qfreq[i,j] <- length(r)
     }
   }

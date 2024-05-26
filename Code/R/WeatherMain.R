@@ -17,6 +17,7 @@ library(roxygen2)
 library(devtools)
 library(pkgload)
 library(StatOrdPattHxC)
+library(dplyr)
 
 # devtools::check("./StatOrdPattHxCModified/R/Test/")
 # devtools::install("./StatOrdPattHxCModified/R/Test/")
@@ -37,12 +38,54 @@ for(i in files){
 
 dataPath = "./../../Data/CSV/weather.csv"
 
+runTiesTable = F
 runEntropyTable = F
-runConfidenceIntervalPlot = T
-runNoise = F
-runWhiteNoise = F
+runConfidenceIntervalPlot = F
+runNoise = T
+runWhiteNoise = T
 runPvalTheoretical = F
 runPvalRandom = F
+
+#TiesTable
+if(runTiesTable){
+  set.seed(123)
+  
+  data = read.csv(dataPath)
+  data = select(data, -STATION)
+  
+  
+  data["NAME"] <- replace(data["NAME"], data["NAME"]=="MIAMI INTERNATIONAL AIRPORT, FL US","Miami")
+  data["NAME"] <- replace(data["NAME"], data["NAME"]=="EDINBURGH ROYAL BOTANIC GARDE, UK","Edinburgh")
+  data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","Dublin")
+  
+  data <- na.omit(data)
+  emb = 3:6 #embeddings
+  
+  
+  location = c("Miami","Edinburgh","Dublin")
+  tiesDf = data.frame()
+  for(l in location){
+    tmax = as.numeric(unlist((data[data["NAME"]==l,"TMAX"])))
+    n = length(tmax)
+    ties = c()
+    for(d in emb){
+      tie = 0
+      for(i in 1:(n-d+1)){
+        seq = tmax[i:(i+d-1)]
+        if (length(unique(seq)) !=d){
+          tie = tie +1/n
+        }
+      }
+      ties = c(ties,tie)
+    }
+    tiesDf = rbind(tiesDf,ties)
+  }
+  colnames(tiesDf) = c("d=3","d=4","d=5","d=6")
+  tiesDf$location = location
+  tiesDf = relocate(tiesDf,location)
+  as.pdf(tiesDf,stem="tiesTable",dir="./../../Figures/PDFjpg/Weather/")
+}
+#####################################################################################
 
 #EntropyTable Code
 #####################################################################################
@@ -65,7 +108,7 @@ if(runEntropyTable){
 
         startDate = "1992-08-08"
         if(date){
-          startDate = "19992-08-14"
+          startDate = "1992-08-14"
           datesToDelete = c("1992-08-08","1992-08-09","1992-08-10","1992-08-11","1992-08-12","1992-08-13")
           data <- data[-which(data$DATE %in% datesToDelete),]
         }
@@ -143,7 +186,7 @@ if(runEntropyTable){
             e3 = HShannon(opd3)
           }
 
-          opd4 = formationPatternMagnus(tmax,D=d,tau=1) #my implementation with even split on ties
+          opd4 = formationPatternM(tmax,D=d) #my implementation with even split on ties
           n = sum(opd4)
           opd4 = opd4/n
           e4 = HShannon(opd4)
@@ -254,7 +297,7 @@ if(runNoise){
   te = c() #Theoretiacal Entropies
   for(i in location){
     tmax = as.numeric(unlist((data[data["NAME"]==i,"TMAX"])))
-    opd4 = formationPatternMagnus(tmax,D=d,tau=1) #my implementation with even split on ties
+    opd4 = formationPatternM(tmax,D=d) #my implementation with even split on ties
     n = sum(opd4)
     opd4 = opd4/n
     te = append(te,HShannon(opd4))
@@ -269,16 +312,17 @@ if(runNoise){
   teE = round(te[2],digits=7) #edinburgh
   teD= round(te[3],digits=7) # dublin
 
-  diffM = round(abs(mean(df[,1])-te[1]),digits=7)
-  diffE = round(abs(mean(df[,2])-te[2]),digits=7)
-  diffD = round(abs(mean(df[,3])-te[3]),digits=7)
-
-  printDf = data.frame(matrix(c(meanM,meanE,meanD,teM,teE,teD,diffM,diffE,diffD),nrow=3,ncol=3,byrow=F))
-  colnames(printDf) = c("meanRandom","theoreticalSplit","diff")
+  medianM = round(median(df[,1]),digits=7)
+  medianE = round(median(df[,2]),digits=7)
+  medianD = round(median(df[,3]),digits=7)
+  
+  
+  printDf = data.frame(matrix(c(meanM,meanE,meanD,medianM,medianE,medianD,teM,teE,teD),nrow=3,ncol=3,byrow=F))
+  colnames(printDf) = c("meanRandom","medianRandom","Theoretical Split")
   printDf$location = location
   printDf = relocate(printDf,location)
   as.pdf(printDf,stem="random_vs_theoreticalSplit",dir="./../../Figures/PDFjpg/Weather/")
-
+  
   pdf("./../../Figures/PDFjpg/Weather/noiseStochasticTheoretical.pdf")
   par(mfrow=c(3,1))
   plot(x=(1:iteration),y=sort(df[,"Miami"]),type="l",xlab="iteration",ylab="Entropy",main="Miami")
@@ -314,23 +358,19 @@ if(runWhiteNoise){
   n=1000
   constant = rep(c(0),n)
 
-  opd = formationPatternMagnus(constant,d,1,output=1)
-  opd = opd/sum(opd)
+  opd = formationPatternM(constant,d,)
   te = HShannon(opd)
-
   entropyList = c()
   for (i in 1:iteration){
     rand = runif(n,0,1)
-    constant=constant+rand
-    entropyList = append(entropyList,global_complexity(constant,ndemb=d)[1])
-    constant=constant-rand
+    entropyList = append(entropyList,global_complexity(rand,ndemb=d)[1])
   }
 
   meanEntropy = mean(entropyList)
-  diff = abs((te-meanEntropy))
+  medianE = median(entropyList)
 
-  printDf = data.frame(matrix(c(meanEntropy,te,diff),nrow=1,ncol=3,byrow=F))
-  colnames(printDf) = c("meanRandom","theoreticalSplit","diff")
+  printDf = data.frame(matrix(c(meanEntropy,medianE,te),nrow=1,ncol=3,byrow=F))
+  colnames(printDf) = c("meanRandom","medianRandom","Theoretical Split")
   as.pdf(printDf,stem="random_vs_theoreticalSplitWhiteNoise",dir="./../../Figures/PDFjpg/Weather/")
 
   pdf("./../../Figures/PDFjpg/Weather/constantWithWhiteNoiseStochasticTheoretical.pdf")
@@ -365,12 +405,10 @@ if(runPvalTheoretical){
   dublin = as.numeric(unlist((data[data["NAME"]=="Dublin","TMAX"])))
   
   
-  me = pval(miami,edinburgh,d,"S") #miami edinburgh
-  md = pval(miami,dublin,d,"S") #miami dublin
-  ed = pval(edinburgh,dublin,d,"S") #dublin edinburgh
+  me = round(pvalM(miami,edinburgh,d,"S"),digits=6) #miami edinburgh
+  md = round(pvalM(miami,dublin,d,"S"),digits=6) #miami dublin
+  ed = round(pvalM(edinburgh,dublin,d,"S"),digits=6) #dublin edinburgh
   pvalDf = rbind(pvalDf,c(i,me,md,ed))
-  data[,"TMAX"]=data[,"TMAX"]
-
   colnames(pvalDf) = c("Iteration","Miami-Edinburgh","Miami-Dublin","Edinburgh-Dublin")
   as.pdf(pvalDf,stem="pValuesTheoreticalTest",dir="./../../Figures/PDFjpg/Weather/")
 }
@@ -381,7 +419,7 @@ if(runPvalTheoretical){
 if(runPvalRandom){
   d=3
   set.seed(123)
-  iterations = 3
+  iterations = 10
   
   data = read.csv(dataPath)
   data = select(data, -STATION)
