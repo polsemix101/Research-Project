@@ -3,10 +3,10 @@
 
 Ordinal Patterns have been around for twenty years.
 They have been used in applications in several domains.
-Many of these applications involve comparing time series, signals and images thorough features extracted from their OPs.
+Many of these applications involve comparing time series, signals, and images through features extracted from their Ordinal Patterns.
 Since results about the distribution of such features are recent, our initial interest was comparing existing conclusions with those supported by the new statistical tests.
 While approaching this research avenue, we found indications of reproducibility crisis in this field, mostly related to data availability.
-We then moved into the application of these new tests to already published results, and found evidence of other type of reproducibility crises: diverging results depending on the type of library employed.
+We then moved into the application of these new tests to already published results, and found evidence of the other type of reproducibility crises: diverging results depending on the type of library employed.
 MAGNUS; then, we decided to study...
 
 
@@ -30,12 +30,12 @@ $$p(\pi)=\frac{\#\{t|t\leq T-n,(x_{t+1},...,x_{t+n}) \mbox{ has type }\pi\}}{T-n
 
 In the above section the delay time, $\tau$, between each observation in each subsequence, has been 1, however this can be set to any reasonable value that still produces enough patterns. In this paper only $\tau=1$ will be used.
 
-From the pattern distribution entropies can be calculated. In this paper only Shannon entropy will be used. 
+From the pattern distribution, entropies can be calculated. In this paper, only Shannon entropy will be used. 
 $$h(n)=-\sum p(\pi) log(p(\pi))$$
 Normalized version
 $$H(n)=-\frac{\sum p(\pi) ln(p(\pi))}{ln(D!)}$$
 
-There is several statistical complexity measures that can be used. They are all a product between the used entropy and a distance measure. In this paper Martin-Plastino-Rosso intesive Statistical Complexity Measure is used, where the distance measure is Jensen-Shannon divergence and it is measured between the pattern distribution and the uniform distribution. The $Q_0$ is normalizing term. It is defined as
+There are several statistical complexity measures that can be used. They are all a product between the used entropy and a distance measure. In this paper Martin-Plastino-Rosso intensive Statistical Complexity Measure is used, where the distance measure is Jensen-Shannon divergence, and it is measured between the pattern distribution and the uniform distribution. The $Q_0$ is normalizing term. It is defined as
 
 $$C[\mathscr{P}]=H[\mathscr{P}]\cdot Q_J[\mathscr{P},\mathscr{P}_e]$$
 
@@ -54,11 +54,11 @@ The topic varies from: "Walnut crack detection..." \cite{Zhang2024}, Schizophren
 
 \section{Reproducibility}
 \paragraph{Reproducibility crisis}
-In data science, data from many different scientific fields are analysed, as shown in the application section of ordinal patterns above. It therefore increases the difficulty of reproducing the data collection stage, as most cases requires an interdisciplinary study involving multiple people. In some cases it is impossible e.g. if the equipment needed is unavailable or a time series of weather data cannot be recollected, since it is impossible to go back in time. The point of science is to eliminate trust, when sharing knowledge, however the above observations highlights the need for some degree of trust, in cases, where data cannot be reproduced. Only data that is random numbers generated in a script, will be reproduced in this paper.
+In data science, data from many different scientific fields are analysed, as shown in the application section of ordinal patterns above. It therefore increases the difficulty of reproducing the data collection stage, as most cases requires an interdisciplinary study involving multiple people. In some cases it is impossible e.g. if the equipment needed is unavailable or a time series of weather data cannot be recollected, since it is impossible to go back in time. The point of science is to eliminate trust, when sharing knowledge, however the above observations highlights the need for some degree of trust, in cases, where data cannot be reproduced. Only data that is random numbers, generated in a script, will be reproduced in this paper.
 
-The COVID pandemic gave birth to the following quote. "We warn against the potential misuse or misleading interpretation of public data of variable quality" \cite{Struelens2021}. Data from different governments does not have the same quality. This necessities good source criticism. In this paper data from peer reviewed studies will be trusted, which have often either produced the data themselves or gotten it from reputable organisations as NASA or NOAA. 
+The COVID pandemic gave birth to the following quote. "We warn against the potential misuse or misleading interpretation of public data of variable quality" \cite{Struelens2021}. Data from different governments does not have the same quality. This necessities good source criticism. In this paper data from peer-reviewed studies will be trusted, which have often either produced the data themselves or got it from reputable organizations as NASA or NOAA. 
 
-In this paper the focus will be on direct computational reproduction.
+In this paper, the focus will be on direct computational reproduction.
 
 "Computational reproducibility is most often direct (reproducing particular analysis outcomes from the same data set using the same code and software), but it can also be conceptual (analysing the same raw data set with alternative approaches, different models or statistical frameworks)" \cite{Fidler2018}
 
