@@ -18,6 +18,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{placeins}
+\usepackage{marginnote}
+	\renewcommand*{\marginfont}{\color{red}\sffamily\tiny}
 %\renewcommand{\baselinestretch}{1.00}
 
 
@@ -30,7 +32,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{The Title}
-\author{M.E Bugge}
+\author{Magnus E.\ Bugge}
 
 \subject{Data Science}
 \abstract{An abstract of fewer than 500 words must be included.}
@@ -67,9 +69,9 @@
 
 % individual chapters included here
 
-\include{Text/Reports/introduction}
-\include{Text/Reports/method}
-\include{Text/Reports/application}
+\include{introduction}
+\include{method}
+\include{application}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -81,7 +83,7 @@
 
 %\bibliographystyle{ieeetr}
 \bibliographystyle{acm}
-\bibliography{Text/Reports/myrefs}
+\bibliography{myrefs}
 
 
 \end{document}
