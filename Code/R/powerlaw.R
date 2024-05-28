@@ -1,18 +1,13 @@
 library(statcomp)
-#library(StatOrdPattHxC)
 library(ggplot2)
 library(rstudioapi)
 library(tidyverse)
 library(prodlim)
-
+library(myLibrary)
 
 setwd(dirname(getActiveDocumentContext()$path ))
 
-files = list.files("./StatOrdPattHxC/R/")
 
-for(i in files){
-  source(paste("./StatOrdPattHxC/R/",i,sep=""))
-}
 
 set.seed(123)
 k1=seq(1,5,by=2)
@@ -22,10 +17,16 @@ n=1000
 iterations=10
 d=3
 
-pwTest = powernoise(5,n)[["x"]]
+pwHist = runif(n) #production of a simple histogram
+opd = ordinal_pattern_time_series(pwHist,ndemb=d)[1:(n-d+1)]
+pdf("./../../Figures/PDFjpg/powerlaw/histogram.pdf")
+barplot(table(opd),xlab="pattern",ylab="frequency",main="Histogram of Ordinal Pattern distribution of random numbers",sub ="d=3 and n=1,000" )
+dev.off()
+
+pwTest = powernoise(5,n)[["x"]] #entropy of power law series with k=5
 print(global_complexity(pwTest,ndemb=3)[1])
 
-for(i3 in 1:m1){
+for(i3 in 1:m1){ #producing rejection and NaN plots for power law series
   rejectionList = c()
   NaNlist = c()
   tempK2 = exp(-5:0)
@@ -49,12 +50,12 @@ for(i3 in 1:m1){
     rejectionList = append(rejectionList,rejectionCounter)
     print(i1)
   }
-  pdf(paste("./../../Figures/PDFjpg/powerlaw/rejectionPlot,k1=",k1[i3],", n=",n,", iterations=",iterations,".pdf",sep=""))
+  pdf(paste("./../../Figures/PDFjpg/powerlaw/rejectionPlot,k1=",k1[i3],",n=",n,",iterations=",iterations,".pdf",sep=""))
   plot(k2[1:m2],rejectionList,xlab="k value of second power law series",ylab="Rejection frequency"
        ,pch=19,main="Testing of entropic hypothesis",
        sub=paste("k=",k1[i3]," for first power law series, n = ",n,", iterations = ",iterations,sep=""))
   dev.off()
-  pdf(paste("./../../Figures/PDFjpg/powerlaw/NaNPlot,k1=",k1[i3],", n=",n,", iterations=",iterations,".pdf",sep=""))
+  pdf(paste("./../../Figures/PDFjpg/powerlaw/NaNPlot,k1=",k1[i3],",n=",n,",iterations=",iterations,".pdf",sep=""))
   plot(k2[1:m2],NaNlist,xlab="k value of second power law series",ylab="NaN frequency"
        ,pch=19,main="Frequency of NaN pvalues in above testing",
        sub=paste("k = ",k1[i3]," for first power law series, n = ",n,", iterations = ",iterations,sep=""))

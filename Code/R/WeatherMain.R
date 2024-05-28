@@ -16,35 +16,21 @@ library(latexpdf)
 library(roxygen2)
 library(devtools)
 library(pkgload)
-library(StatOrdPattHxC)
+library(myLibrary)
 library(dplyr)
 
-# devtools::check("./StatOrdPattHxCModified/R/Test/")
-# devtools::install("./StatOrdPattHxCModified/R/Test/")
-
 setwd(dirname(getActiveDocumentContext()$path ))
-
-files = list.files("./StatOrdPattHxCModified/R/")
-for(i in files){
-  source(paste("./StatOrdPattHxCModified/R/",i,sep=""))
-}
-
-files = list.files("./StatOrdPattHxC/R/")
-
-for(i in files){
-  source(paste("./StatOrdPattHxC/R/",i,sep=""))
-}
 
 
 dataPath = "./../../Data/CSV/weather.csv"
 
 runTiesTable = F
 runEntropyTable = F
-runConfidenceIntervalPlot = F
+runConfidenceIntervalPlot = T
 runNoise = T
 runWhiteNoise = T
-runPvalTheoretical = F
-runPvalRandom = F
+runPvalTheoretical = T
+runPvalRandom = T
 
 #TiesTable
 if(runTiesTable){
@@ -53,7 +39,6 @@ if(runTiesTable){
   data = read.csv(dataPath)
   data = select(data, -STATION)
   
-  
   data["NAME"] <- replace(data["NAME"], data["NAME"]=="MIAMI INTERNATIONAL AIRPORT, FL US","Miami")
   data["NAME"] <- replace(data["NAME"], data["NAME"]=="EDINBURGH ROYAL BOTANIC GARDE, UK","Edinburgh")
   data["NAME"] <- replace(data["NAME"], data["NAME"]=="DUBLIN PHOENIX PARK, EI","Dublin")
@@ -61,7 +46,7 @@ if(runTiesTable){
   data <- na.omit(data)
   emb = 3:6 #embeddings
   
-  
+  Lin
   location = c("Miami","Edinburgh","Dublin")
   tiesDf = data.frame()
   for(l in location){
@@ -73,10 +58,10 @@ if(runTiesTable){
       for(i in 1:(n-d+1)){
         seq = tmax[i:(i+d-1)]
         if (length(unique(seq)) !=d){
-          tie = tie +1/n
+          tie = tie +1/n*100
         }
       }
-      ties = c(ties,tie)
+      ties = c(ties,round(tie,digits=1))
     }
     tiesDf = rbind(tiesDf,ties)
   }
@@ -169,7 +154,7 @@ if(runEntropyTable){
 
           opd1 = codebook(tmax,m=d) #pdc
           e1 = HShannon(opd1)
-
+          formationPattern
 
           hist = histD3(tmax) #hist implementation of odp
           opd2 = c(0,0,0,0,0,0)
@@ -235,7 +220,7 @@ if(runConfidenceIntervalPlot){
     opd = formationPatternM(tmax,d)
     n=length(tmax)-d+1
     entropyComplexity = global_complexity(opd=opd)[1:2]
-    newVariance = sigma2q(tmax,d,"S")/n
+    newVariance = sigma2qM2(tmax,d,"S")/n
     newSd = newVariance**(1/2)#/(n**(1/2)) #standard deviation
     z = qnorm(1-0.01/2) #z score
     newCI = z*newSd #One side of the confidence interval
@@ -243,6 +228,7 @@ if(runConfidenceIntervalPlot){
   }
   df$location = location
   colnames(df) = c("entropy","complexity","newVariance","CILength1Side","location")
+  load("myLibrary/data/LinfLsup.rda")
   limitMin = LinfLsup[which((LinfLsup$Dimension==d & LinfLsup$Side=="Lower"& LinfLsup$H>0.963)),]
   limitMax = LinfLsup[which((LinfLsup$Dimension==d & LinfLsup$Side=="Upper" & LinfLsup$H>0.963)),]
   pdf("./../../Figures/PDFjpg/Weather/confidenceIntervalPlot.pdf")
@@ -410,7 +396,7 @@ if(runPvalTheoretical){
   ed = round(pvalM(edinburgh,dublin,d,"S"),digits=6) #dublin edinburgh
   pvalDf = rbind(pvalDf,c(i,me,md,ed))
   colnames(pvalDf) = c("Iteration","Miami-Edinburgh","Miami-Dublin","Edinburgh-Dublin")
-  as.pdf(pvalDf,stem="pValuesTheoreticalTest",dir="./../../Figures/PDFjpg/Weather/")
+  as.pdf(pvalDf,stem="pValuesTheoretical",dir="./../../Figures/PDFjpg/Weather/")
 }
 
 #####################################################################################
@@ -419,7 +405,7 @@ if(runPvalTheoretical){
 if(runPvalRandom){
   d=3
   set.seed(123)
-  iterations = 10
+  iterations = 1
   
   data = read.csv(dataPath)
   data = select(data, -STATION)
@@ -442,9 +428,9 @@ if(runPvalRandom){
     dublin = as.numeric(unlist((data[data["NAME"]=="Dublin","TMAX"])))
     
     
-    me = pval(miami,edinburgh,d,"S") #miami edinburgh
-    md = pval(miami,dublin,d,"S") #miami dublin
-    ed = pval(edinburgh,dublin,d,"S") #dublin edinburgh
+    me = pvalM2(miami,edinburgh,d,"S") #miami edinburgh
+    md = pvalM2(miami,dublin,d,"S") #miami dublin
+    ed = pvalM2(edinburgh,dublin,d,"S") #dublin edinburgh
     pvalDf = rbind(pvalDf,c(i,me,md,ed))
     data[,"TMAX"]=data[,"TMAX"]-rand
   }
