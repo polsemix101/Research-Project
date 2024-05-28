@@ -38,7 +38,7 @@ for(i3 in 1:m1){ #producing rejection and NaN plots for power law series
     for (i2 in 1:iterations){
       pw1 = powernoise(k1[i3],n)
       pw2=powernoise(k2[i1],n)
-      pvalue = pval(pw1[["x"]],pw2[["x"]],d,"S")
+      pvalue = pvalM2(pw1[["x"]],pw2[["x"]],d,"S")
       if (identical(pvalue,NaN) | pvalue<0.05){
         rejectionCounter = rejectionCounter+1/iterations
       }

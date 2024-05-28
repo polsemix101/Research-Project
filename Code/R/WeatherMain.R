@@ -24,13 +24,14 @@ setwd(dirname(getActiveDocumentContext()$path ))
 
 dataPath = "./../../Data/CSV/weather.csv"
 
+#Set to true, if section should be run.
 runTiesTable = F
 runEntropyTable = F
-runConfidenceIntervalPlot = T
-runNoise = T
-runWhiteNoise = T
-runPvalTheoretical = T
-runPvalRandom = T
+runConfidenceIntervalPlot = F
+runNoise = F
+runWhiteNoise = F
+runPvalTheoretical = F
+runPvalRandom = F
 
 #TiesTable
 if(runTiesTable){

@@ -1,0 +1,37 @@
+\chapter{Comparison of two time series}
+\section{Examples of how comparisons are done in the literature,}
+Ordinal Patterns have been used in astrophysics to analyse geomagnetic auroras. Two articles were found to do this. They both compare the plotted points in the HxC plane to fractional Brownian motion time series. "Many of the points are on or very near the fractional Brownian motion curve, but a single point from the Helios data lies above the fractional Brownian motion curve."~\cite{Weygand2019}. A small amount of calculation is done in this paper to rate the statistical likelihood of a point being displaced from the fractional Brownian motion(fBm), but no method is presented to evaluate, if a point is displaced. "Figure 4 indicates that complexity-entropy values of AL overlap the fBm values for all subsampling parameters $\tau$"~\cite{Osmane2019}. Same problem in this article, where no method is presented to systemic rate if a point is overlapping or not with fBm values. Ordinal patterns is often used in climate research to detect changes in the dynamics of a weather system over time. This is done, in this paper~\cite{Saco2010}, by splitting the dataset into windows and calculating the entropy for each window. No method is presented to evaluate if a change in entropy is significant. It is assumed that a change in entropy means a change in the dynamics of the system, without considering the possibility that it might be caused by stochastic randomness of sampling. 
+
+\section{Statistical Test and Confidence Intervals}
+Confidence intervals describe the range within a sampling of a distribution has a certain percentage of being in. Statistical Test can be used to reject a wide range of hypothesises. P value is used as rejection criteria, where the lower the p values is the lower is the chance of making a type 1 error, which is rejecting a true hypothesis.\cite{Smithson2003}
+
+\section{Confidence Interval of an Ordinal Pattern Distribution Entropy}
+By assuming that $\textbf{X}_n = (X_{1,n},X_{2,n},...,X_{K,n})$ with $n \in \mathbb{N}$ is a sequence of independent and identically distributed K-variate vectors of random variables. Furthermore, assuming as $n$ tends to infinity, $$\sqrt{n}(X_{1,n}-\theta_1,X_{2,n}-\theta_2,...,X_{K,n}-\theta_K)$$ 
+converges in distribution to the multivariate normal law $\mathscr{N}(\textbf{0},S_{\textbf{X}})$, where $S_{\textbf{X}}$ is the covariance matrix. The following terms are defined:
+m is the embedding dimension.
+$\mathbf{q}=(q_1,q_2,...,q_{m!})$, where $q_i$ is the probability of observing the ordinal pattern $\pi_i$.
+$\mathbf{D_q}=Diag(q_1,q_2,...,q_{m!})$ Diagonal matrix.
+$\mathbf{Q}^{(\ell)}$, which is the transition matrix with elements
+$q_{ij}^{(\ell)}=Pr(\psi =\pi_i \wedge \psi_{t+\ell}=\pi_j)$
+for $\ell = 1,2,...,m-1$
+
+
+From this starting point it is derived that 
+$$\sqrt{n}[S(\hat{\textbf{q}})-S(\textbf{q})] \overset{\mathscr{D}}{\underset{n\rightarrow\infty}{\longrightarrow}}\mathscr{N}(0,\sigma_{\textbf{q}}^2)$$
+$$ \sigma_{\textbf{q}}^2=\sum_{i=1}^{m!}(\mathbf{\Sigma_q})_{ii}+2\sum_{i=1}^{m!-1}\sum_{j=i+1}^{m!}(\bm{\Sigma_q)}_{ij}$$
+
+\begin{displaymath}
+  (\mathbf{\Sigma_q})_{ij} = \left\{
+    \begin{array}{lr}
+      (ln(q_i)+1)^2\mathbf{\Sigma}_{ii} & \text{if $i=j$}\\
+      (ln(q_i)+1)(ln(q_j)+1)\mathbf{\Sigma}_{ij} & \text{if $i \neq j$}
+    \end{array}
+  \right.
+\end{displaymath} 
+
+$$\mathbf{\Sigma}=\mathbf{D_q}-(2m-1)\mathbf{qq}^T+\Sigma_{\ell=1}^{m-1}(\mathbf{Q}^{(\ell)}+{\mathbf{Q}^{(\ell)}}^T)$$  
+\cite{Rey2023}It is the variance that is of interest, as it will be used for statistical tests. The test goes as follows. Let $x=(x_1,x_2,...,x_{n_x})$ and $y=(y_1,y_2,...,y_{n_y})$ be two independent time series of length $n_x=T_x+D_x-1$ and $n_y=T_y+D_y-1$. $p_x$ and $p_y$ is the ordinal distributions of the time series. $H(\hat{p}_x)$ and $H(\hat{p}_y)$ is their entropies. A new distribution W is constructed. $W \overset{D}{\rightarrow}\mathscr{N}(\mu_W,\sigma_W^2)$, with $\mu_W=\mu_{n_x,p_x}-\mu_{n_y,p_y}$ and $\sigma_W^2=\sigma_{n_x,p_x}^2+\sigma_{n_y,p_y}^2$. 
+The p value ends up being $2(1-\Phi(\xi))$, where $\xi = \frac{H(\hat{p}_x)-H(\hat{p}_u)}{\sigma_W}$.~\cite{Chagas2022}
+
+\section{Implementation}
+The three main libraries that will be used specific to the field of ordinal patterns are: statcomp\cite{statcomp}, pdc\cite{pdc} and StatOrdPattHxC, which is a library developed by the supervisor of this project. Slight modifications are made to StatOrdPattHxC. As will be shown later, these three libraries perform quite differently in a lot of cases. Solutions for this are proposed. StatOrdPattHxC has the variance and statistical test implemented, which statcomp and pdc do not. A wide range of standard R libraries is utilized as well.

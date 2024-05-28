@@ -1,9 +1,10 @@
 library(pdc)
 library(devtools)
+library(rstudioapi)
 
-#install_gitlab(repo="freryal/asymptotic-distribution-of-various-types-of-entropyunder-the-multinomial-law",host='https://gitlab.ecs.vuw.ac.nz/')
+setwd(dirname(getActiveDocumentContext()$path ))
 
-path <-"C:/Users/magnu/Desktop/skole/Vuw/BA/Research-Project/Data/TXT/pallcacocha_red_intensity.txt"
+path <-"./../../data/TXT/pallcacocha_red_intensity.txt"
 data <- read.delim(path, sep="\t", skip=103, nrow=15918)
 
 
@@ -54,21 +55,19 @@ median <- function(lst){#take median of time series, to be used as x-axis value
   lst[500]
 }
 
-#print(f)
 
 entropy <- lapply(f, se)
-#print(entropy)
 
-#time <- lapply(tData,avg)
-#print(time)
 
 time1 <- lapply(tData,median)
-#print(time1)
 
 
 
 srow <- 11000
 
-plot.new()
+path = "./../../Figures/PDFjpg/ElNino/"
+pdf(paste(path,"Entropy.pdf"))
 plot(time1,entropy,pch=16, xlab='Time(cal. yr BP)',ylab='Normalized Shannon Entropy')
+dev.off()
+pdf(paste(path,"RedColor.pdf"))
 plot(data[1:srow,2],data[1:srow,3], type='l', xlab='Time(cal. yr BP)', ylab='Red color intensity')
