@@ -133,6 +133,25 @@ and we can define the normalized Jensen-Shannon distance as $Q(\widehat{\bm p}, 
 With this, Lamberti et al.~\cite{Lamberti2004} proposed $C(\widehat{\bm p})=H(\widehat{\bm p})Q(\widehat{\bm p}, \bm{u})$ as a measure of the Statistical Complexity of the underlying dynamics.
 Notice that both $H(\widehat{\bm p})$ and $Q(\widehat{\bm p}, \bm{u})$ are normalized quantities, so also is $C(\widehat{\bm p}, \bm{u})$. 
 
+Not all values in $[0,1]^2$ are possible
+Martin et al.~\cite{GeneralizedStatisticalComplexityMeasuresGeometricalandAnalyticalProperties}, using geometrical arguments on the space of configurations, found expressions for the boundaries of the feasible values.
+The lower boundary $C_{\min}$ is smooth, while the upper $C_{\max}$ is defined by $D!-1$ pieces.
+The upper boundary converges to a smooth curve when $D\to\infty$.
+The set of possible values is called ``Entropy-Complexity'' or ``$H\times C$ plane,'' although it is not a plane but a closed set embedded in $[0,1]^2$.
+
+Quoting Ref.~\cite{WhiteNoiseTestfromOrdinalPatternsintheEntropyComplexityPlane}:
+\begin{quote}
+Fig.~\ref{fig:Boundaries} shows the boundaries of the $H\times C$ plane for the embedding dimensions $D=3$ (red) $D=4$ (green), and $D=5$ (blue).
+The inset plot highlights the fine structure of the upper boundary inside the rectangle.
+The jagged structure of $C_{\max}$ increases the difficulty of finding distributions for the points in the $H\times C$ plane.
+\end{quote}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=.7\linewidth]{../../Figures/BoundariesPlot}
+	\caption{Boundaries of the $H\times C$ plane for dimension embeddings $D=3,4,5$. From: Chagas et al.~\cite{WhiteNoiseTestfromOrdinalPatternsintheEntropyComplexityPlane}}\label{fig:Boundaries}
+\end{figure}
+
 \section{Reproducibility}
 
 Data from many scientific fields are analysed in data science, as shown in the application section of ordinal patterns above. 
