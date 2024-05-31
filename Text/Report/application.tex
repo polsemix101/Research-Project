@@ -63,7 +63,7 @@ The libraries mentioned earlier all handle ties differently, as seen in Figure 4
     \caption{Entropy table of libraries performs on different preprocessing}
 \end{figure}
 
-A more in-depth analysis of the Theoretical Split vs adding noise is made. The statcomp library is the comparison library, but it does not matter, which library is chosen, since they perform identically in this case. As can be seen in Figure 4.5 the theoretical value is very close to both the mean and median of the entropy of 1,000 iterations. Figure 4.4 clearly shows the problem of adding a random sample of white noise, since the value might easily end up 0.001 off either the mean, median, or theoretical value, which all seem to be quite precise values of the entropy since the theoretical value is calculated quite differently then the mean and median, but they still end up much closer, then a random sample do. 
+A more in-depth analysis of the Theoretical Split versus adding noise is made. The statcomp library is the comparison library, but it does not matter, which library is chosen, since they perform identically in this case. As can be seen in Figure 4.5 the theoretical value is very close to both the mean and median of the entropy of 1,000 iterations. Figure 4.4 clearly shows the problem of adding a random sample of white noise, since the value might easily end up 0.001 off either the mean, median, or theoretical value, which all seem to be quite precise values of the entropy since the theoretical value is calculated quite differently then the mean and median, but they still end up much closer, then a random sample do. 
 
 \begin{figure}
     \centering
@@ -99,7 +99,7 @@ Figure 4.8 is a plot of the theoretical split values as the entropy of the three
     \caption{HxC plane of locations with confidence interval}
 \end{figure}
 
-P values are calculated. 10 iterations are done on adding noise for breaking ties and compared with the p-value of the theoretical split. The theoretical p value is only larger than one iteration for Miami-Edinburgh, two for Miami-Dublin and four for Edinburg-Dublin, which is OK. Ideally, it should be between iteration 5 and 6. Most importantly, it is the range of the iterations, which definitely confirms it is implemented so what correctly. 
+P values are calculated. 10 iterations are done on adding noise for breaking ties and compared with the p-value of the theoretical split. The theoretical p value is only larger than one iteration for Miami-Edinburgh, two for Miami-Dublin and four for Edinburgh-Dublin, which is OK. Ideally, it should be between iteration 5 and 6. Most importantly, it is the range of the iterations, which definitely confirms it is implemented so what correctly. 
 
 
 Adding noise has a couple of problems in the sense that it is much more computer-intensive to calculate just 10 iterations compared with the theoretical value once.
