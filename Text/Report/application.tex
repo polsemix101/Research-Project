@@ -1,5 +1,7 @@
 \chapter{Applications}
+
 \section{Power-law noise}
+
 The statistical test mentioned in the previous chapter is tested on computer-generated power-law noise series.\cite{Timmer1995} the $\beta$ term in the formula $\frac{1}{f^{\beta}}$ will be referenced ask for the rest of the paper. Three values of k are chosen: $k_1=(1,3,5)$. For each $k_1$ value, another set of k values is generated using the formula $k_2=(k_1-e^0,k_1-e^{-1},k_1-e^{-2},k_1-e^{-3},k_1+0,k_1+e^0,k_1+e^{-1},k_1+e^{-2},k_1+e^{-3})$. The statistical test is used on every possible pair of a value from $k_1$ and a value from $k_2$. Two power-law series are generated using each value in the pair. The series has 1,000 elements. The hypothesis will be rejected if the p-value is less than 0.05. 10 iterations are done for each pair. A plot will be made for each $k_1$ value of the rejection rate of the statistical test. A NaN plot is included for each plot, which shows the rate, at which the statistical test produces NaN values. NaN values are only produced in the last graph. Power-law series with k=5 have entropy around $0.4$, the rest of the time series that will be examined in the paper have entropy above 0.9, so this should not be a problem. The Rejection plot for $k_1=1$ is quite surprising in the sense that many values around $k_1$ has a high rejection rate. $k_1=3$ looks the most as, what was expected since the further away a point gets from $k_1$ the larger is the rejection rate.
 
 
