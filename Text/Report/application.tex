@@ -64,19 +64,50 @@ The case $k_1=3$ corroborates that the further away a point gets from $k_1$, the
 \FloatBarrier
 
 \section{Idea behind new tie breaking}
-In the next section, a new way to break ties will be implemented and used. The idea behind it is when having a tie, instead of either randomly assigning it to any of the possible patterns, which was proposed by Bandt and Pompe in their original paper~\cite{Bandt2002}, or always assigning a type of tie to a given pattern, which is done in the article being used in the next section~\cite{Chagas2022}, the new idea is to assign an equally large weight to all the possible patterns in case of a tie. In a tie, with k possible patterns, each of these k patterns gets a weight of $\frac{1}{k}$. The amount of possible patterns is the product of the occurrence of each unique value. To calculate the ordinal pattern distribution, simply sum up all the weights for each pattern and divide by the total amount of weight to get the frequency. Ordinal patterns are often used in fields that do science on real-world phenomena. In cases where the measuring equipment has a low precision, ties will often occur, e.g. a weight measurement. It is commonly known that objects have an atomic weight, since all everyday objects are made of particles that have an atomic weight. The atomic weight unit is $1\mu = 1.66..\cdot10^{-27}kg$, so the theoretical weight of an object has a lot of decimals, which could theoretically be measured, however putting a person on a normal household scale will only give a result in kilograms with one decimal. A person measuring themselves on a scale at different times and weighing the same does not mean they had the same atomic weight at both times. Their data would result in a tie, but based on the above argumentation it is fair to assume that in reality, the weight has either gone up or down, however, it is impossible with the given instruments to measure, which it is, so the only fair assumption is that both cases are equally likely. This can almost be seen as superposition\cite{Schroedinger1926} of the change of weight. The weight has gone both up and down until a more precise measurement is made, but until that, it is only fair to think both cases are possible and in this case equally possible. This type of tie-breaking should work, where it can be argued that a theoretical measurement has a higher precision than the actual measurement. It does, however, not make sense to use it, when the measured value can be argued to be of the same precision as a theoretical measurement, e.g. “How many cows are in front of me at a certain type?”. This implementation will briefly be referenced as “My implementation”, but mostly as a “Theoretical Split”. Note that the theoretical split method does not need noise added. Adding noise almost always removes all ties, which means it should perform identically to “article implementation”, which is the implementation made in the article\cite{Chagas2022}, since it is built upon that code. The theoretical split and the second tie-breaking solution are deterministic, whereas the Bandt and Pompe solution is stochastic.
 
-\FloatBarrier
+Ordinal patterns are often used in fields that do science on real-world phenomena. In cases where the measuring equipment finite precision, ties will often occur. 
+
+A person measuring themselves on a scale at different times and weighing the same may not register the same value.
+The weight has gone both up and down until a more precise measurement is made, but until that, it is only fair to think both cases are possible and in this case equally possible. 
+This type of tie-breaking should work, where it can be argued that a theoretical measurement has a higher precision than the actual measurement. 
+It does, however, not make sense to use it when the measured value can be argued to be of the same precision as a theoretical measurement, e.g., “How many cows are in front of me?” 
+
+We will call the proposed solution “Theoretical Split”. 
+Note that the theoretical split method does not need to add noise. 
+Adding noise almost always removes all ties, which means it should perform identically to the implementation by Chagas et al.~\cite{Chagas2022}, since it is built upon that code. 
+The theoretical split and the second tie-breaking solution are deterministic, whereas the Bandt and Pompe solution is stochastic.
+
+As previously mentioned, one of the sources of lack of reproducibility is how tied values are handled.
+Bandt and Pompe~\cite{Bandt2002}  in their original paper proposed randomly assigning to the word any of the possible patterns.
+Chagas et al.~\cite{Chagas2022} always assigning the same symbol.
+Our proposal is to assign an equally large weight to all the possible patterns in case of a tie.
+
+A word of size $D$ should have $D!$ possible patterns.
+In the presence of white noise, each of these patterns has weight ${1}/{D!}$. 
+The amount of possible patterns is the product of the occurrence of each unique value. 
+To calculate the ordinal pattern distribution, simply sum up all the weights for each pattern and divide by the total amount of weight to get the frequency. 
+
+%\FloatBarrier
 
 \section{Temperature Data}
-\cite{Chagas2022} Will be partly reproduced and additional plots and tables will be made. Only the maximum temperature part of the climate data in section 6 of the article will be used. As can be seen in Figure 4.2 the percentage of ties in this dataset is extremely high. It is therefore quite important, how ties are handled since they make up a bulk of the dataset. 
-\begin{figure}
-    \centering
-    \includegraphics{./Weather/tiesTable.pdf}
-    \caption{Table of ties in percentage}
-\end{figure}
 
+We will partly reproduce the work by Rey et al.~\cite{Rey2023}, with additional plots and tables. 
+Only the maximum temperature part of the climate data in section 6 of the article will be used. As can be seen in Table~\ref{tab:TiesPercentages} the percentage of ties in this dataset is extremely high. 
+It is therefore quite important to establish how ties are handled since they make up a bulk of the dataset. 
 
+\begin{table}[hbt]
+\centering
+\begin{tabular}{*5{c}}
+\toprule
+Location & $D=3$ & $D=4$ & $D=5$ & $D=6$\\ \midrule
+Miami & 41.9 & 61.6 & 75.9 & 85.5\\
+Edinburgh & 27.2 & 45.1 & 61.4 & 74.5 \\
+Dublin & 26.5 & 44.5 & 61.1 & 74.8\\ \bottomrule
+\end{tabular}
+    \caption{Percentage of ties}\label{tab:TiesPercentages}
+\end{table}
+
+%%% ACF Up to this point on 2024-06-03 16:46
 The libraries mentioned earlier all handle ties differently, as seen in Figure 4.3. The first three columns are the setting of each experiment. The start date column is included, because the paper, where the data is from, accidentally started their data on 1992-08-14, instead of 1992-08-08 as they said the data started from, it does however not make a big difference, which can be seen between the top three rows and bottom three rows.  If all the values in a row are identically, that means the libraries perform identically. The only setting, where this happens, is when noise is added and Na values are omitted. Na omit removes Na values and the dataset is pushed together, where the Na values have been removed. In the rest of the experiment, this setting will be used. 
 
 \begin{figure}
